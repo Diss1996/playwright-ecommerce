@@ -8,6 +8,9 @@ export interface User {
   birthMonth: string;
   birthYear: string;
 
+  newsletter: boolean;
+  specialOffers: boolean;
+
   firstName: string;
   lastName: string;
   company?: string;

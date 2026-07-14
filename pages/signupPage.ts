@@ -12,6 +12,9 @@ export class SignupPage {
   readonly month: Locator;
   readonly year: Locator;
 
+  readonly newsletterBox: Locator;
+  readonly specialOffersBox: Locator;
+
   readonly firstName: Locator;
   readonly lastName: Locator;
   readonly company: Locator;
@@ -36,6 +39,9 @@ export class SignupPage {
     this.day = page.locator('[data-qa="days"]');
     this.month = page.locator('[data-qa="months"]');
     this.year = page.locator('[data-qa="years"]');
+
+    this.newsletterBox = page.locator("#newsletter");
+    this.specialOffersBox = page.locator("#optin");
 
     this.firstName = page.locator('[data-qa="first_name"]');
     this.lastName = page.locator('[data-qa="last_name"]');
@@ -71,6 +77,14 @@ export class SignupPage {
     await this.day.selectOption(user.birthDay);
     await this.month.selectOption(user.birthMonth);
     await this.year.selectOption(user.birthYear);
+
+    if (user.newsletter === true) {
+      await this.newsletterBox.check();
+    }
+
+    if (user.specialOffers === true) {
+      await this.specialOffersBox.check();
+    }
 
     await this.firstName.fill(user.firstName);
     await this.lastName.fill(user.lastName);

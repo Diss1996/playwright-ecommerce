@@ -13,6 +13,9 @@ export function createUser(): User {
     birthMonth: "6",
     birthYear: "1995",
 
+    newsletter: true,
+    specialOffers: true,
+
     firstName: "Test",
     lastName: "User",
     company: "Test Company",
