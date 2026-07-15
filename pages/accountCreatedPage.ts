@@ -1,19 +1,25 @@
-import { Page, Locator, expect } from "@playwright/test";
+import { Locator, Page } from "@playwright/test";
+import { BasePage } from "./basePage";
 
-export class AccountCreatedPage {
+export class AccountCreatedPage extends BasePage {
   readonly heading: Locator;
   readonly continueButton: Locator;
 
-  constructor(private page: Page) {
-    this.heading = page.locator('[data-qa="account-created"]');
-    this.continueButton = page.locator('[data-qa="continue-button"]');
-  }
+  constructor(page: Page) {
+    super(page);
 
-  async clickContinueButton(){
-    this.continueButton.click();
+    this.heading = page.getByTestId("account-created");
+    this.continueButton = page.getByTestId("continue-button");
   }
 
   async verifyPageLoaded() {
-  await expect(this.heading).toHaveText("Account Created!");
-}
+    await this.verifyText(
+      this.heading,
+      "Account Created!"
+    );
+  }
+
+  async clickContinue() {
+    await this.click(this.continueButton);
+  }
 }

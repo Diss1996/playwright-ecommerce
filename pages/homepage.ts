@@ -1,10 +1,13 @@
 import { Page, Locator } from "@playwright/test";
+import { BasePage } from "./basePage";
 
-export class Homepage {
+export class Homepage extends BasePage {
   readonly loginButton: Locator;
   readonly deleteAccountButton: Locator;
 
-  constructor(private page: Page) {
+  constructor(page: Page) {
+    super(page);
+
     this.deleteAccountButton = page.locator("a", {
       hasText: "Delete Account",
     });
@@ -21,16 +24,14 @@ export class Homepage {
   }
 
   async deleteAccount() {
-    await this.deleteAccountButton.click();
+    await this.click(this.deleteAccountButton);
   }
 
   async goToLogin() {
-    await this.loginButton.click();
+    await this.click(this.loginButton);
   }
 
   async goto() {
-    await this.page.goto("/", {
-      waitUntil: "domcontentloaded",
-    });
+    await super.goto("/");
   }
 }

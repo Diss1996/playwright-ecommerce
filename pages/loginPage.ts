@@ -1,13 +1,16 @@
-import { Page, Locator, expect } from "@playwright/test";
+import { Page, Locator } from "@playwright/test";
+import { BasePage } from "./basePage";
 import { User } from "../test-data/users";
 
-export class LoginPage {
+export class LoginPage extends BasePage {
   readonly signupNameInput: Locator;
   readonly signupEmailInput: Locator;
   readonly signupButton: Locator;
   readonly newUserHeading: Locator;
 
-  constructor(private page: Page) {
+  constructor(page: Page) {
+    super(page);
+
     this.signupNameInput = page.locator('[data-qa="signup-name"]');
     this.signupEmailInput = page.locator('[data-qa="signup-email"]');
     this.signupButton = page.locator('[data-qa="signup-button"]');
@@ -17,18 +20,16 @@ export class LoginPage {
   }
 
   async goto() {
-    await this.page.goto("/login/", {
-      waitUntil: "domcontentloaded",
-    });
+    await super.goto("/login");
   }
 
-  async verifyPageLoad(){
-      await expect(this.newUserHeading).toContainText("New User Signup!");
+  async verifyPageLoaded() {
+    await this.verifyText(this.newUserHeading, "New User Signup!");
   }
 
   async startSignup(user: User) {
     await this.signupNameInput.fill(user.name);
     await this.signupEmailInput.fill(user.email);
-    await this.signupButton.click();
+    await this.click(this.signupButton);
   }
 }

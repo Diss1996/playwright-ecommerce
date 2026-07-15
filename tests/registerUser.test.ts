@@ -11,13 +11,13 @@ test("register and delete user", async ({
   const user = createUser();
 
   await homepage.goToLogin();
-  await loginPage.verifyPageLoad();
+  await loginPage.verifyPageLoaded();
   await loginPage.startSignup(user);
   await signupPage.completeRegistration(user);
   await accountCreatedPage.verifyPageLoaded();
-  await accountCreatedPage.clickContinueButton();
+  await accountCreatedPage.clickContinue();
   await expect(homepage.loggedInUser(user.name)).toBeVisible();
   await homepage.deleteAccount();
-  await deletedAccountPage.verifyAccountDeletion();
+  await deletedAccountPage.verifyPageLoaded();
   await deletedAccountPage.clickContinue();
 });

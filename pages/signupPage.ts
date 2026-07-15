@@ -1,7 +1,8 @@
 import { Page, Locator } from "@playwright/test";
+import { BasePage } from "./basePage";
 import { User } from "../test-data/users";
 
-export class SignupPage {
+export class SignupPage extends BasePage {
   readonly mrRadio: Locator;
   readonly mrsRadio: Locator;
 
@@ -29,7 +30,10 @@ export class SignupPage {
   readonly mobileNumber: Locator;
 
   readonly createAccountButton: Locator;
-  constructor(private page: Page) {
+
+  constructor(page: Page) {
+    super(page);
+
     this.mrRadio = page.locator("#id_gender1");
     this.mrsRadio = page.locator("#id_gender2");
 
@@ -60,9 +64,7 @@ export class SignupPage {
   }
 
   async goto() {
-    await this.page.goto("/signup/", {
-      waitUntil: "domcontentloaded",
-    });
+    await super.goto("/signup");
   }
 
   async completeRegistration(user: User) {
@@ -78,11 +80,11 @@ export class SignupPage {
     await this.month.selectOption(user.birthMonth);
     await this.year.selectOption(user.birthYear);
 
-    if (user.newsletter === true) {
+    if (user.newsletter) {
       await this.newsletterBox.check();
     }
 
-    if (user.specialOffers === true) {
+    if (user.specialOffers) {
       await this.specialOffersBox.check();
     }
 
@@ -106,6 +108,6 @@ export class SignupPage {
     await this.zipcode.fill(user.zipcode);
     await this.mobileNumber.fill(user.mobileNumber);
 
-    await this.createAccountButton.click();
+    await this.click(this.createAccountButton);
   }
 }
