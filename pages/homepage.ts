@@ -4,6 +4,7 @@ import { BasePage } from "./basePage";
 export class Homepage extends BasePage {
   readonly loginButton: Locator;
   readonly deleteAccountButton: Locator;
+  readonly logoutButton: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -14,6 +15,10 @@ export class Homepage extends BasePage {
 
     this.loginButton = page.getByRole("link", {
       name: "Signup / Login",
+    });
+
+    this.logoutButton = page.getByRole("link", {
+      name: " Logout",
     });
   }
 
@@ -29,6 +34,10 @@ export class Homepage extends BasePage {
 
   async goToLogin() {
     await this.click(this.loginButton);
+  }
+
+  async logout() {
+    await this.click(this.logoutButton);
   }
 
   async goto() {

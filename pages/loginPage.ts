@@ -8,6 +8,12 @@ export class LoginPage extends BasePage {
   readonly signupButton: Locator;
   readonly newUserHeading: Locator;
 
+  readonly loginEmailInput: Locator;
+  readonly loginPasswordInput: Locator;
+  readonly loginButton: Locator;
+
+  readonly errorMessage: Locator;
+
   constructor(page: Page) {
     super(page);
 
@@ -16,6 +22,13 @@ export class LoginPage extends BasePage {
     this.signupButton = page.locator('[data-qa="signup-button"]');
     this.newUserHeading = page.locator("h2", {
       hasText: "New User Signup!",
+    });
+    this.loginEmailInput = page.getByTestId("login-email");
+    this.loginPasswordInput = page.getByTestId("login-password");
+    this.loginButton = page.getByTestId("login-button");
+
+    this.errorMessage = page.locator("p", {
+      hasText: "Your email or password is incorrect!",
     });
   }
 
@@ -31,5 +44,11 @@ export class LoginPage extends BasePage {
     await this.signupNameInput.fill(user.name);
     await this.signupEmailInput.fill(user.email);
     await this.click(this.signupButton);
+  }
+
+  async startLogin(user: User) {
+    await this.loginEmailInput.fill(user.email);
+    await this.loginPasswordInput.fill(user.password);
+    await this.click(this.loginButton);
   }
 }

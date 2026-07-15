@@ -1,12 +1,12 @@
 import { User } from "./users";
 
-export function createUser(): User {
+export function createUser(overrides: Partial<User> = {}): User {
   const id = Date.now();
 
-  return {
+  const user: User = {
     title: "Mr",
     name: "Test User",
-    email: `test${Date.now()}@example.com`,
+    email: `test${id}@example.com`,
     password: "Password123",
 
     birthDay: "15",
@@ -27,5 +27,10 @@ export function createUser(): User {
     city: "Halifax",
     zipcode: "B3H1A1",
     mobileNumber: "9025551234",
+  };
+
+  return {
+    ...user,
+    ...overrides,
   };
 }

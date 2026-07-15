@@ -30,6 +30,7 @@ export class SignupPage extends BasePage {
   readonly mobileNumber: Locator;
 
   readonly createAccountButton: Locator;
+  readonly registrationError: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -61,6 +62,9 @@ export class SignupPage extends BasePage {
     this.mobileNumber = page.locator('[data-qa="mobile_number"]');
 
     this.createAccountButton = page.locator('[data-qa="create-account"]');
+    this.registrationError = page.locator("p", {
+      hasText: "Email Address already exist!",
+    });
   }
 
   async goto() {

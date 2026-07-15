@@ -5,6 +5,7 @@ import { LoginPage } from "../pages/loginPage";
 import { SignupPage } from "../pages/signupPage";
 import { AccountCreatedPage } from "../pages/accountCreatedPage";
 import { DeletedAccountPage } from "../pages/deletedAccountPage";
+import { RegistrationFlow } from "../flows/registrationFlow";
 
 type myFixtures = {
   homepage: Homepage;
@@ -12,6 +13,7 @@ type myFixtures = {
   signupPage: SignupPage;
   accountCreatedPage: AccountCreatedPage;
   deletedAccountPage: DeletedAccountPage;
+  registrationFlow: RegistrationFlow;
 };
 
 export const test = base.extend<myFixtures>({
@@ -40,6 +42,20 @@ export const test = base.extend<myFixtures>({
   deletedAccountPage: async ({ page }, use) => {
     const deletedAccountPage = new DeletedAccountPage(page);
     await use(deletedAccountPage);
+  },
+
+  registrationFlow: async (
+    { homepage, loginPage, signupPage, accountCreatedPage },
+    use,
+  ) => {
+    const registrationFlow = new RegistrationFlow(
+      homepage,
+      loginPage,
+      signupPage,
+      accountCreatedPage,
+    );
+
+    await use(registrationFlow);
   },
 });
 
