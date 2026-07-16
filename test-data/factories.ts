@@ -1,4 +1,5 @@
 import { User } from "./users";
+import { ContactMessage } from "./contactMessage";
 
 export function createUser(overrides: Partial<User> = {}): User {
   const id = Date.now();
@@ -31,6 +32,23 @@ export function createUser(overrides: Partial<User> = {}): User {
 
   return {
     ...user,
+    ...overrides,
+  };
+}
+
+export function createContactMessage(
+  overrides: Partial<ContactMessage> = {},
+): ContactMessage {
+  const message: ContactMessage = {
+    name: "Test User",
+    email: `test${Date.now()}@example.com`,
+    subject: "Test Subject",
+    message: "This is a test message.",
+    attachment: undefined,
+  };
+
+  return {
+    ...message,
     ...overrides,
   };
 }

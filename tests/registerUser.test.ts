@@ -1,72 +1,95 @@
 import { test, expect } from "../fixtures/fixtures";
-import { createUser } from "../test-data/factories";
+import { ContactUsPage } from "../pages/contactUsPage";
+import { createUser, createContactMessage } from "../test-data/factories";
 
-test("register and delete user", async ({
-  homepage,
-  deletedAccountPage,
-  registrationFlow,
-}) => {
-  const user = createUser();
-  await registrationFlow.register(user);
-
-  await expect(homepage.loggedInUser(user.name)).toBeVisible();
-
-  await homepage.deleteAccount();
-  await deletedAccountPage.verifyPageLoaded();
-  await deletedAccountPage.clickContinue();
-});
-
-test("register already existing email", async ({
-  homepage,
-  loginPage,
-  registrationFlow,
-  signupPage,
-}) => {
-  const user = createUser();
-  await registrationFlow.register(user);
-  await homepage.logout();
-
-  const user2 = createUser({
-    email: user.email,
+test.describe("registration and login", () => {
+  test.beforeEach(async ({ homepage }) => {
+    await homepage.goto();
   });
-  await homepage.goToLogin();
-  await loginPage.startSignup(user2);
-  await expect(signupPage.registrationError).toBeVisible();
 
-  await expect(signupPage.registrationError).toBeVisible();
+  test("register and delete user", async ({
+    navbar,
+    deletedAccountPage,
+    registrationFlow,
+  }) => {
+    const user = createUser();
+    await registrationFlow.register(user);
 
-  await loginPage.goto(); //cleaning up first created user
-  await loginPage.startLogin(user);
-  await homepage.deleteAccount();
+    await expect(navbar.loggedInUser(user.name)).toBeVisible();
+
+    await navbar.deleteAccount();
+    await deletedAccountPage.verifyPageLoaded();
+    await deletedAccountPage.clickContinue();
+  });
+
+  test("register already existing email", async ({
+    navbar,
+    loginPage,
+    registrationFlow,
+    signupPage,
+  }) => {
+    const user = createUser();
+    await registrationFlow.register(user);
+    await navbar.logout();
+
+    const user2 = createUser({
+      email: user.email,
+    });
+
+    await navbar.goToLogin();
+    await loginPage.startSignup(user2);
+    await expect(signupPage.registrationError).toBeVisible();
+
+    // Clean up the original account
+    await loginPage.goto();
+    await loginPage.startLogin(user);
+    await navbar.deleteAccount();
+  });
+
+  test("login user with correct credentials", async ({
+    navbar,
+    loginPage,
+    deletedAccountPage,
+    registrationFlow,
+  }) => {
+    const user = createUser();
+    await registrationFlow.register(user);
+    await navbar.logout();
+
+    await loginPage.startLogin(user);
+    await expect(navbar.loggedInUser(user.name)).toBeVisible();
+
+    await navbar.deleteAccount();
+    await deletedAccountPage.verifyPageLoaded();
+    await deletedAccountPage.clickContinue();
+  });
+
+  test("login user with wrong credentials", async ({ navbar, loginPage }) => {
+    const user = createUser();
+
+    await navbar.goToLogin();
+
+    const invalidUser = {
+      ...user,
+      password: "WrongPassword123!",
+    };
+
+    await loginPage.startLogin(invalidUser);
+    await expect(loginPage.errorMessage).toBeVisible();
+  });
 });
 
-test("login user with correct credentials", async ({
-  homepage,
-  loginPage,
-  deletedAccountPage,
-  registrationFlow,
-}) => {
-  const user = createUser();
-  await registrationFlow.register(user);
-  await homepage.logout();
+// test("contact form", async ({ homepage, navbar, contactUsPage }) => {
+//   //doesnt work in chromium, issues with the confirm prompt
+//   const contactUsMessage = createContactMessage();
 
-  await loginPage.startLogin(user);
-  await expect(homepage.loggedInUser(user.name)).toBeVisible();
+//   await homepage.goto();
+//   await navbar.goToContactUs();
 
-  await homepage.deleteAccount();
-  await deletedAccountPage.verifyPageLoaded();
-  await deletedAccountPage.clickContinue();
-});
+//   await contactUsPage.verifyPageLoaded();
 
-test("login user with wrong credentials", async ({ homepage, loginPage }) => {
-  const user = createUser();
-  await homepage.goToLogin();
+//   await contactUsPage.fillContactForm(contactUsMessage);
+//   await contactUsPage.submit();
 
-  const invalidUser = {
-    ...user,
-    password: "WrongPassword123!",
-  };
-  await loginPage.startLogin(invalidUser);
-
-  await expect(loginPage.errorMessage).toBeVisible();
-});
+//   await expect(contactUsPage.successMessage).toBeVisible();
+// });
