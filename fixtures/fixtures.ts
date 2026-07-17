@@ -8,6 +8,8 @@ import { DeletedAccountPage } from "../pages/deletedAccountPage";
 import { RegistrationFlow } from "../flows/registrationFlow";
 import { Navbar } from "../components/navbar";
 import { ContactUsPage } from "../pages/contactUsPage";
+import { ProductsPage } from "../pages/products";
+import { ProductDetailsPage } from "../pages/productDetailsPage";
 
 type myFixtures = {
   homepage: Homepage;
@@ -18,6 +20,8 @@ type myFixtures = {
   registrationFlow: RegistrationFlow;
   navbar: Navbar;
   contactUsPage: ContactUsPage;
+  productsPage: ProductsPage;
+  productsDetailsPage: ProductDetailsPage;
 };
 
 export const test = base.extend<myFixtures>({
@@ -26,9 +30,19 @@ export const test = base.extend<myFixtures>({
     await use(homepage);
   },
 
+  productsDetailsPage: async ({ page }, use) => {
+    const productsDetailsPage = new ProductDetailsPage(page);
+    await use(productsDetailsPage);
+  },
+
   contactUsPage: async ({ page }, use) => {
     const contactUsPage = new ContactUsPage(page);
     await use(contactUsPage);
+  },
+
+  productsPage: async ({ page }, use) => {
+    const productsPage = new ProductsPage(page);
+    await use(productsPage);
   },
 
   navbar: async ({ page }, use) => {

@@ -1,5 +1,6 @@
 import { test, expect } from "../fixtures/fixtures";
 import { ContactUsPage } from "../pages/contactUsPage";
+import { ProductsPage } from "../pages/products";
 import { createUser, createContactMessage } from "../test-data/factories";
 
 test.describe("registration and login", () => {
@@ -66,7 +67,6 @@ test.describe("registration and login", () => {
 
   test("login user with wrong credentials", async ({ navbar, loginPage }) => {
     const user = createUser();
-
     await navbar.goToLogin();
 
     const invalidUser = {
@@ -76,6 +76,42 @@ test.describe("registration and login", () => {
 
     await loginPage.startLogin(invalidUser);
     await expect(loginPage.errorMessage).toBeVisible();
+  });
+});
+
+test.describe("products page", () => {
+  test.beforeEach(async ({ productsPage }) => {
+    await productsPage.goto();
+  });
+
+  test("navigate to products page and view products", async ({
+    productsPage,
+    productsDetailsPage,
+  }) => {
+    await productsPage.openProduct(0);
+    await productsDetailsPage.verifyPageLoaded();
+    await expect(productsDetailsPage.availability).toContainText("In Stock");
+    await expect(productsDetailsPage.productName).toContainText("Blue Top");
+    await expect(productsDetailsPage.condition).toContainText("New");
+    await expect(productsDetailsPage.brand).toContainText("Polo");
+    await expect(productsDetailsPage.price).toContainText("500");
+  });
+
+  test("search products", async ({
+    productsPage,
+    productsDetailsPage,
+    page,
+  }) => {
+    const searchTerm = "Top";
+    await productsPage.search(searchTerm);
+
+    const count = await productsPage.productCount();
+    for (let i = 0; i < count; i++) {
+      await productsPage.openProduct(i);
+      await productsPage.closeAdIfPresent();
+      await expect(productsDetailsPage.category).toContainText("Top");
+      await page.goBack();
+    }
   });
 });
 

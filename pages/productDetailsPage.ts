@@ -1,0 +1,93 @@
+import { Page, Locator } from "@playwright/test";
+import { BasePage } from "./basePage";
+
+export class ProductDetailsPage extends BasePage {
+  //product information
+  readonly productName: Locator;
+  readonly category: Locator;
+  readonly price: Locator;
+  readonly availability: Locator;
+  readonly condition: Locator;
+  readonly brand: Locator;
+
+  //purchase information
+  readonly quantityInput: Locator;
+  readonly addToCartButton: Locator;
+
+  //add to cart modal
+  readonly addedModal: Locator;
+  readonly viewCartLink: Locator;
+  readonly continueShoppingButton: Locator;
+
+  //review form
+  readonly reviewNameInput: Locator;
+  readonly reviewEmailInput: Locator;
+  readonly reviewTextArea: Locator;
+  readonly submitReviewButton: Locator;
+  readonly reviewSuccessMessage: Locator;
+
+  constructor(page: Page) {
+    super(page);
+
+    this.productName = page.locator(".product-information h2");
+    this.category = page.locator(".product-information p").first();
+    this.price = page.locator(".product-information span > span");
+    this.availability = page.locator("p", {
+      hasText: "Availability:",
+    });
+    this.condition = page.locator("p", {
+      hasText: "Condition:",
+    });
+    this.brand = page.locator("p", {
+      hasText: "Brand:",
+    });
+
+    this.quantityInput = page.locator("#quantity");
+    this.addToCartButton = page.getByRole("button", {
+      name: "Add to cart",
+    });
+
+    this.addedModal = page.locator("#cartModal");
+    this.viewCartLink = this.addedModal.getByRole("link", {
+      name: "View Cart",
+    });
+    this.continueShoppingButton = this.addedModal.getByRole("button", {
+      name: "Continue Shopping",
+    });
+
+    this.reviewNameInput = page.locator("#name");
+    this.reviewEmailInput = page.locator("#email");
+    this.reviewTextArea = page.locator("#review");
+    this.submitReviewButton = page.locator("#button-review");
+    this.reviewSuccessMessage = page.locator("#review-section");
+  }
+
+  async verifyPageLoaded() {
+    await this.verifyVisible(this.productName);
+  }
+
+  async setQuantity(quantity: number) {
+    await this.quantityInput.fill(quantity.toString());
+  }
+
+  async addToCart() {
+    await this.click(this.addToCartButton);
+  }
+
+  async continueShopping() {
+    await this.click(this.continueShoppingButton);
+  }
+
+  async viewCart() {
+    await this.click(this.viewCartLink);
+  }
+
+  async submitReview(name: string, email: string, review: string) {
+    //need to make review test-data
+    await this.reviewNameInput.fill(name);
+    await this.reviewEmailInput.fill(email);
+    await this.reviewTextArea.fill(review);
+
+    await this.click(this.submitReviewButton);
+  }
+}
