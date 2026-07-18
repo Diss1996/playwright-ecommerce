@@ -90,4 +90,15 @@ export class ProductDetailsPage extends BasePage {
 
     await this.click(this.submitReviewButton);
   }
+
+  async matchesSearch(searchTerm: string): Promise<boolean> {
+    const term = searchTerm.toLowerCase();
+
+    const category = ((await this.category.textContent()) ?? "").toLowerCase();
+    const productName = (
+      (await this.productName.textContent()) ?? ""
+    ).toLowerCase();
+
+    return category.includes(term) || productName.includes(term); //returns true if either match
+  }
 }

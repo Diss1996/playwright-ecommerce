@@ -1,6 +1,4 @@
 import { test, expect } from "../fixtures/fixtures";
-import { ContactUsPage } from "../pages/contactUsPage";
-import { ProductsPage } from "../pages/products";
 import { createUser, createContactMessage } from "../test-data/factories";
 
 test.describe("registration and login", () => {
@@ -80,8 +78,15 @@ test.describe("registration and login", () => {
 });
 
 test.describe("products page", () => {
-  test.beforeEach(async ({ productsPage }) => {
+  test.beforeEach(async ({ productsPage, page }) => {
     await productsPage.goto();
+
+    await page.route(
+      /googleads|doubleclick|googlesyndication/,
+      (
+        route, //prevents googleads from opening
+      ) => route.abort(),
+    );
   });
 
   test("navigate to products page and view products", async ({
@@ -102,17 +107,34 @@ test.describe("products page", () => {
     productsDetailsPage,
     page,
   }) => {
-    const searchTerm = "Top";
+    const searchTerm = "dress";
     await productsPage.search(searchTerm);
 
     const count = await productsPage.productCount();
+
     for (let i = 0; i < count; i++) {
       await productsPage.openProduct(i);
-      await productsPage.closeAdIfPresent();
-      await expect(productsDetailsPage.category).toContainText("Top");
+      expect(await productsDetailsPage.matchesSearch(searchTerm)).toBe(true);
       await page.goBack();
     }
   });
+
+  test("add products to cart", async ({ productsPage, cartPage }) => {
+    await productsPage.addProductToCart("1");
+    await productsPage.verifyAddedModalVisible();
+    await productsPage.continueShopping();
+    await productsPage.addProductToCart("2");
+    await productsPage.verifyAddedModalVisible();
+    await productsPage.clickViewCart();
+    //unfinished
+  });
+});
+
+test("footer subscription", async ({ homepage, footer }) => {
+  await homepage.goto();
+  await footer.verifyLoaded();
+  await footer.subscribe("testing@mail.com");
+  await footer.verifySubscriptionSuccess();
 });
 
 // test("contact form", async ({ homepage, navbar, contactUsPage }) => {

@@ -9,7 +9,12 @@ export class ProductsPage extends BasePage {
   readonly allProducts: Locator;
   readonly productCards: Locator;
   readonly viewProductButtons: Locator;
-  readonly adCloseButton: Locator;
+
+  readonly addedModal: Locator;
+  readonly addedModalTitle: Locator;
+  readonly addedModalMessage: Locator;
+  readonly viewCartLink: Locator;
+  readonly continueShoppingButton: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -27,11 +32,31 @@ export class ProductsPage extends BasePage {
       name: "View Product",
     });
 
-    this.adCloseButton = this.page.locator("#dismiss-button-element");
+    this.addedModal = page.locator(".modal-content");
+    this.addedModalTitle = this.addedModal.getByRole("heading", {
+      name: "Added!",
+    });
+    this.addedModalMessage = this.addedModal.getByText(
+      "Your product has been added to cart.",
+    );
+    this.viewCartLink = this.addedModal.getByRole("link", {
+      name: "View Cart",
+    });
+    this.continueShoppingButton = this.addedModal.getByRole("button", {
+      name: "Continue Shopping",
+    });
   }
 
   async goto() {
     await super.goto("/products");
+  }
+
+  async addProductToCart(productId: string) {
+    const button = this.page
+      .locator(`a.add-to-cart[data-product-id="${productId}"]`)
+      .first();
+
+    await this.click(button);
   }
 
   async verifyPageLoaded() {
@@ -63,13 +88,15 @@ export class ProductsPage extends BasePage {
     return await this.page.locator(".productinfo p").allTextContents();
   }
 
-  async closeAdIfPresent() {
-  try {
-    if (await this.adCloseButton.isVisible({ timeout: 500 })) {
-      await this.adCloseButton.click();
-    }
-  } catch {
-    // Ad wasn't present or disappeared before we could click it.
+  async verifyAddedModalVisible() {
+    await this.verifyVisible(this.addedModal);
   }
-}
+
+  async clickViewCart() {
+    await this.click(this.viewCartLink);
+  }
+
+  async continueShopping() {
+    await this.click(this.continueShoppingButton);
+  }
 }
