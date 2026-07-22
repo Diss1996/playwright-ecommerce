@@ -1,4 +1,5 @@
 import { Page, Locator } from "@playwright/test";
+import { Product } from "../test-data/products";
 import { BasePage } from "./basePage";
 
 export class ProductDetailsPage extends BasePage {
@@ -100,5 +101,29 @@ export class ProductDetailsPage extends BasePage {
     ).toLowerCase();
 
     return category.includes(term) || productName.includes(term); //returns true if either match
+  }
+
+  async getProductInformation(id: string): Promise<Product> {
+    return {
+      id,
+      name: (await this.productName.textContent()) ?? "",
+      category: ((await this.category.textContent()) ?? "")
+        .replace("Category:", "")
+        .trim(),
+      price: (await this.price.textContent()) ?? "",
+      availability: ((await this.availability.textContent()) ?? "")
+        .replace("Availability:", "")
+        .trim(),
+      condition: ((await this.condition.textContent()) ?? "")
+        .replace("Condition:", "")
+        .trim(),
+      brand: ((await this.brand.textContent()) ?? "")
+        .replace("Brand:", "")
+        .trim(),
+    };
+  }
+
+  async goBack() {
+    await this.page.goBack();
   }
 }

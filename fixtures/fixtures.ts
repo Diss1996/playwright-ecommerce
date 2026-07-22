@@ -8,10 +8,11 @@ import { DeletedAccountPage } from "../pages/deletedAccountPage";
 import { RegistrationFlow } from "../flows/registrationFlow";
 import { Navbar } from "../components/navbar";
 import { ContactUsPage } from "../pages/contactUsPage";
-import { ProductsPage } from "../pages/products";
+import { ProductsPage } from "../pages/productsPage";
 import { ProductDetailsPage } from "../pages/productDetailsPage";
 import { Footer } from "../components/footer";
 import { CartPage } from "../pages/cartPage";
+import { AddProductsToCartFlow } from "../flows/addProductsToCartFlow";
 
 type myFixtures = {
   homepage: Homepage;
@@ -26,6 +27,7 @@ type myFixtures = {
   productsDetailsPage: ProductDetailsPage;
   footer: Footer;
   cartPage: CartPage;
+  addProductsToCartFlow: AddProductsToCartFlow;
 };
 
 export const test = base.extend<myFixtures>({
@@ -94,6 +96,15 @@ export const test = base.extend<myFixtures>({
     );
 
     await use(registrationFlow);
+  },
+
+  addProductsToCartFlow: async ({ productsPage, productsDetailsPage }, use) => {
+    const addProductsToCartFlow = new AddProductsToCartFlow(
+      productsPage,
+      productsDetailsPage,
+    );
+
+    await use(addProductsToCartFlow);
   },
 });
 

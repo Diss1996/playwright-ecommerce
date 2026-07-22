@@ -69,7 +69,11 @@ export class ProductsPage extends BasePage {
   }
 
   async openProduct(index: number) {
-    await this.viewProductButtons.nth(index).click();
+    await this.viewProductButtons.nth(index - 1).click(); //opens by current position in the search
+  }
+
+  async openProductById(id: string) {
+    await this.page.locator(`a[href="/product_details/${id}"]`).click(); //opens by id in the url
   }
 
   async productCount() {
