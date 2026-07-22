@@ -8,25 +8,30 @@ export class AddProductsToCartFlow {
     private productsDetailsPage: ProductDetailsPage,
   ) {}
 
-  async addProducts(productIds: string[]): Promise<Product[]> {
+  async addProducts(
+    productsToAdd: { id: string; quantity: number }[],
+  ): Promise<Product[]> {
     const products: Product[] = [];
 
-    for (let i = 0; i < productIds.length; i++) {
-      const productId = productIds[i]; //for each product id given, open its page, add its info to products array, go back to products page, add to cart, continue into all added
+    for (let i = 0; i < productsToAdd.length; i++) {
+      const { id, quantity } = productsToAdd[i];
 
-      await this.productsPage.openProductById(productId);
+      await this.productsDetailsPage.openProductById(id);
 
-      products.push(
-        await this.productsDetailsPage.getProductInformation(productId),
+      const product = await this.productsDetailsPage.getProductInformation(
+        id,
+        quantity,
       );
 
-      await this.productsDetailsPage.goBack();
+      products.push(product);
 
-      await this.productsPage.addProductToCart(productId);
-      await this.productsPage.verifyAddedModalVisible();
+      await this.productsDetailsPage.setQuantity(quantity);
+      await this.productsDetailsPage.addToCart();
 
-      if (i < productIds.length - 1) {
-        await this.productsPage.continueShopping();
+      await this.productsDetailsPage.verifyAddedModalVisible();
+
+      if (i < productsToAdd.length - 1) {
+        await this.productsDetailsPage.continueShopping();
       }
     }
 

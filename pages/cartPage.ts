@@ -127,7 +127,7 @@ export class CartPage extends BasePage {
       expect(cartProducts[i].name).toBe(products[i].name);
       expect(cartProducts[i].category).toBe(products[i].category);
       expect(cartProducts[i].price).toBe(products[i].price);
-      expect(cartProducts[i].quantity).toBe(1);
+      expect(cartProducts[i].quantity).toBe(products[i].quantity);
     }
   }
 }

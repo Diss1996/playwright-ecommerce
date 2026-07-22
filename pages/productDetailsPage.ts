@@ -71,8 +71,16 @@ export class ProductDetailsPage extends BasePage {
     await this.quantityInput.fill(quantity.toString());
   }
 
+  async openProductById(id: string) {
+    await this.goto(`/product_details/${id}`); //opens by id in the url
+  }
+
   async addToCart() {
     await this.click(this.addToCartButton);
+  }
+
+  async verifyAddedModalVisible() {
+    await this.verifyVisible(this.addedModal);
   }
 
   async continueShopping() {
@@ -103,7 +111,7 @@ export class ProductDetailsPage extends BasePage {
     return category.includes(term) || productName.includes(term); //returns true if either match
   }
 
-  async getProductInformation(id: string): Promise<Product> {
+  async getProductInformation(id: string, quantity: number): Promise<Product> {
     return {
       id,
       name: (await this.productName.textContent()) ?? "",
@@ -120,6 +128,7 @@ export class ProductDetailsPage extends BasePage {
       brand: ((await this.brand.textContent()) ?? "")
         .replace("Brand:", "")
         .trim(),
+      quantity,
     };
   }
 

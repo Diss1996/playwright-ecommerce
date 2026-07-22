@@ -47,7 +47,28 @@ test.describe("products page", () => {
     addProductsToCartFlow,
     cartPage,
   }) => {
-    const products = await addProductsToCartFlow.addProducts(["2", "7", "4"]);
+    const products = await addProductsToCartFlow.addProducts([
+      {
+        id: "7",
+        quantity: 3,
+      },
+      {
+        id: "13",
+        quantity: 6,
+      },
+    ]);
+    await productsPage.clickViewCart();
+    await cartPage.verifyProducts(products);
+  });
+
+  test("add products to cart and change quantity", async ({
+    productsPage,
+    addProductsToCartFlow,
+    cartPage,
+  }) => {
+    const products = await addProductsToCartFlow.addProducts([
+      { id: "1", quantity: 5 },
+    ]);
     await productsPage.clickViewCart();
     await cartPage.verifyProducts(products);
   });

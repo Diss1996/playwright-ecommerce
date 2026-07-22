@@ -6,6 +6,7 @@ export interface Product {
   availability: string;
   condition: string;
   brand: string;
+  quantity: number;
 }
 
 export interface CartProduct {
