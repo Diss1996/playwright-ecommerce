@@ -18,7 +18,7 @@ export class Navbar extends BasePage {
 
     this.homeLink = page.getByRole("link", { name: "Home" });
     this.productsLink = page.getByRole("link", { name: "Products" });
-    this.cartLink = page.getByRole("link", { name: "Cart" });
+    this.cartLink = page.getByRole("link", { name: "Cart",  exact: true, });
     this.loginLink = page.getByRole("link", { name: "Signup / Login" });
 
     //only visible after logging in

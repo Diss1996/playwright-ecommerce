@@ -1,6 +1,8 @@
 import { test, expect } from "../fixtures/fixtures";
+import { createUser } from "../test-data/factories";
+import { createPaymentDetails } from "../test-data/factories";
 
-test.describe("products page", () => {
+test.describe("products and cart", () => {
   test.beforeEach(async ({ productsPage, page }) => {
     await productsPage.goto();
 
@@ -71,5 +73,59 @@ test.describe("products page", () => {
     ]);
     await productsPage.clickViewCart();
     await cartPage.verifyProducts(products);
+  });
+});
+
+test.describe("orders", () => {
+  test.beforeEach(async ({ productsPage, page }) => {
+    await productsPage.goto();
+
+    await page.route(
+      /googleads|doubleclick|googlesyndication/,
+      (
+        route, //prevents googleads from opening
+      ) => route.abort(),
+    );
+  });
+
+  test("register while in checkout and complete an order", async ({
+    productsPage,
+    addProductsToCartFlow,
+    cartPage,
+    registrationFlow,
+    navbar,
+    checkoutPage,
+    paymentPage,
+    paymentDonePage,
+    deletedAccountPage,
+  }) => {
+    const products = await addProductsToCartFlow.addProducts([
+      { id: "5", quantity: 1 },
+    ]);
+    await productsPage.clickViewCart();
+    await cartPage.verifyProducts(products);
+    await cartPage.proceedToCheckout();
+
+    const user = createUser();
+    await registrationFlow.registerFromCheckout(user);
+
+    await expect(navbar.loggedInUser(user.name)).toBeVisible();
+    await navbar.goToCart();
+    await cartPage.proceedToCheckout();
+
+    await checkoutPage.verifyBillingAddress(user);
+    await checkoutPage.verifyDeliveryAddress(user);
+    await checkoutPage.addOrderComment("Leave at the door");
+    await checkoutPage.placeOrder();
+
+    const payment = createPaymentDetails();
+    await paymentPage.enterPaymentDetails(payment);
+    await paymentPage.payAndConfirmOrder();
+    await paymentDonePage.verifyPageLoaded();
+    await paymentDonePage.continue();
+
+    await navbar.deleteAccount();
+    await deletedAccountPage.verifyPageLoaded();
+    await deletedAccountPage.clickContinue();
   });
 });

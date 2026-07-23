@@ -25,7 +25,9 @@ export class CartPage extends BasePage {
     this.continueCartButton = this.checkoutModal.getByRole("button", {
       name: "Continue On Cart",
     });
-    this.loginLink = this.checkoutModal.getByText("Register / Login");
+    this.loginLink = this.checkoutModal.getByRole("link", {
+      name: "Register / Login",
+    });
     this.emptyCartMessage = page.locator("#empty_cart");
   }
 

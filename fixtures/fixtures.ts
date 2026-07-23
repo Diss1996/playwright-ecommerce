@@ -13,6 +13,9 @@ import { ProductDetailsPage } from "../pages/productDetailsPage";
 import { Footer } from "../components/footer";
 import { CartPage } from "../pages/cartPage";
 import { AddProductsToCartFlow } from "../flows/addProductsToCartFlow";
+import { CheckoutPage } from "../pages/checkoutPage";
+import { PaymentPage } from "../pages/paymentPage";
+import { PaymentDonePage } from "../pages/paymentDonePage";
 
 type myFixtures = {
   homepage: Homepage;
@@ -28,12 +31,30 @@ type myFixtures = {
   footer: Footer;
   cartPage: CartPage;
   addProductsToCartFlow: AddProductsToCartFlow;
+  checkoutPage: CheckoutPage;
+  paymentPage: PaymentPage;
+  paymentDonePage: PaymentDonePage;
 };
 
 export const test = base.extend<myFixtures>({
   homepage: async ({ page }, use) => {
     const homepage = new Homepage(page);
     await use(homepage);
+  },
+
+  paymentDonePage: async ({ page }, use) => {
+    const paymentDonePage = new PaymentDonePage(page);
+    await use(paymentDonePage);
+  },
+
+  paymentPage: async ({ page }, use) => {
+    const paymentPage = new PaymentPage(page);
+    await use(paymentPage);
+  },
+
+  checkoutPage: async ({ page }, use) => {
+    const checkoutPage = new CheckoutPage(page);
+    await use(checkoutPage);
   },
 
   cartPage: async ({ page }, use) => {
@@ -85,7 +106,7 @@ export const test = base.extend<myFixtures>({
   },
 
   registrationFlow: async (
-    { navbar, loginPage, signupPage, accountCreatedPage },
+    { navbar, loginPage, signupPage, accountCreatedPage, cartPage },
     use,
   ) => {
     const registrationFlow = new RegistrationFlow(
@@ -93,6 +114,7 @@ export const test = base.extend<myFixtures>({
       loginPage,
       signupPage,
       accountCreatedPage,
+      cartPage,
     );
 
     await use(registrationFlow);

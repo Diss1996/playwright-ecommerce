@@ -1,5 +1,6 @@
 import { User } from "./users";
 import { ContactMessage } from "./contactMessage";
+import { PaymentDetails } from "./paymentDetails";
 
 export function createUser(overrides: Partial<User> = {}): User {
   const id = Date.now();
@@ -49,6 +50,23 @@ export function createContactMessage(
 
   return {
     ...message,
+    ...overrides,
+  };
+}
+
+export function createPaymentDetails(
+  overrides: Partial<PaymentDetails> = {},
+): PaymentDetails {
+  const paymentDetails: PaymentDetails = {
+    nameOnCard: "Test User",
+    cardNumber: "4111111111111111",
+    cvc: "311",
+    expiryMonth: "12",
+    expiryYear: "2030",
+  };
+
+  return {
+    ...paymentDetails,
     ...overrides,
   };
 }
