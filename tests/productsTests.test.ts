@@ -74,6 +74,29 @@ test.describe("products and cart", () => {
     await productsPage.clickViewCart();
     await cartPage.verifyProducts(products);
   });
+
+  test("add products to cart and remove", async ({
+    productsPage,
+    addProductsToCartFlow,
+    cartPage,
+  }) => {
+    const products = await addProductsToCartFlow.addProducts([
+      { id: "5", quantity: 5 },
+      { id: "1", quantity: 1 },
+      { id: "3", quantity: 2 },
+    ]);
+    await productsPage.clickViewCart();
+    await cartPage.verifyProducts(products);
+    await cartPage.removeProduct("1");
+    await cartPage.removeProduct("3");
+
+    const idsToRemove = ["1", "3"];
+    const remainingProducts = products.filter(
+      (product) => !idsToRemove.includes(product.id),
+    );
+
+    await cartPage.verifyProducts(remainingProducts);
+  });
 });
 
 test.describe("orders", () => {
@@ -111,6 +134,100 @@ test.describe("orders", () => {
 
     await expect(navbar.loggedInUser(user.name)).toBeVisible();
     await navbar.goToCart();
+    await cartPage.proceedToCheckout();
+
+    await checkoutPage.verifyBillingAddress(user);
+    await checkoutPage.verifyDeliveryAddress(user);
+    await checkoutPage.addOrderComment("Leave at the door");
+    await checkoutPage.placeOrder();
+
+    const payment = createPaymentDetails();
+    await paymentPage.enterPaymentDetails(payment);
+    await paymentPage.payAndConfirmOrder();
+    await paymentDonePage.verifyPageLoaded();
+    await paymentDonePage.continue();
+
+    await navbar.deleteAccount();
+    await deletedAccountPage.verifyPageLoaded();
+    await deletedAccountPage.clickContinue();
+  });
+
+  test("register before checkout and complete an order", async ({
+    productsPage,
+    addProductsToCartFlow,
+    cartPage,
+    registrationFlow,
+    navbar,
+    checkoutPage,
+    paymentPage,
+    paymentDonePage,
+    deletedAccountPage,
+  }) => {
+    const user = createUser();
+    await registrationFlow.register(user);
+
+    await expect(navbar.loggedInUser(user.name)).toBeVisible();
+    await navbar.goToProducts();
+
+    const products = await addProductsToCartFlow.addProducts([
+      {
+        id: "12",
+        quantity: 1,
+      },
+      {
+        id: "18",
+        quantity: 9,
+      },
+    ]);
+    await productsPage.clickViewCart();
+    await cartPage.verifyProducts(products);
+    await cartPage.proceedToCheckout();
+
+    await checkoutPage.verifyBillingAddress(user);
+    await checkoutPage.verifyDeliveryAddress(user);
+    await checkoutPage.addOrderComment("Leave at the door");
+    await checkoutPage.placeOrder();
+
+    const payment = createPaymentDetails();
+    await paymentPage.enterPaymentDetails(payment);
+    await paymentPage.payAndConfirmOrder();
+    await paymentDonePage.verifyPageLoaded();
+    await paymentDonePage.continue();
+
+    await navbar.deleteAccount();
+    await deletedAccountPage.verifyPageLoaded();
+    await deletedAccountPage.clickContinue();
+  });
+
+  test("register, logout, login before checkout and complete an order", async ({
+    productsPage,
+    addProductsToCartFlow,
+    cartPage,
+    registrationFlow,
+    navbar,
+    checkoutPage,
+    paymentPage,
+    paymentDonePage,
+    deletedAccountPage,
+    loginPage,
+  }) => {
+    const user = createUser();
+    await registrationFlow.register(user);
+    await expect(navbar.loggedInUser(user.name)).toBeVisible();
+    await navbar.logout();
+
+    await loginPage.startLogin(user);
+    await expect(navbar.loggedInUser(user.name)).toBeVisible();
+    await navbar.goToProducts();
+
+    const products = await addProductsToCartFlow.addProducts([
+      {
+        id: "21",
+        quantity: 3,
+      },
+    ]);
+    await productsPage.clickViewCart();
+    await cartPage.verifyProducts(products);
     await cartPage.proceedToCheckout();
 
     await checkoutPage.verifyBillingAddress(user);

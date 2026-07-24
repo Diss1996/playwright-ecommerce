@@ -60,11 +60,15 @@ export class CartPage extends BasePage {
   }
 
   async removeProduct(productId: string) {
-    const deleteButton = this.page.locator(
+    const productRow = this.page.locator(`#product-${productId}`);
+
+    const deleteButton = productRow.locator(
       `.cart_quantity_delete[data-product-id="${productId}"]`,
     );
 
     await this.click(deleteButton);
+
+    await expect(productRow).toBeHidden();
   }
 
   async proceedToCheckout() {
