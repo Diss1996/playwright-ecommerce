@@ -97,6 +97,28 @@ test.describe("products and cart", () => {
 
     await cartPage.verifyProducts(remainingProducts);
   });
+
+  test("sidebar category products", async ({ productsPage, sidebar }) => {
+    await sidebar.verifySidebarLoaded();
+    await sidebar.selectCategory("Women", "Dress");
+    await productsPage.verifyProductsSearch("Women", "Dress");
+    await sidebar.verifySidebarLoaded();
+    await sidebar.selectCategory("Men", "Jeans");
+    await productsPage.verifyProductsSearch("Men", "Jeans");
+    await sidebar.verifySidebarLoaded();
+    await sidebar.selectCategory("Kids", "Tops & Shirts");
+    await productsPage.verifyProductsSearch("Kids", "Tops & Shirts");
+  });
+
+  test("sidebar brand products", async ({ productsPage, sidebar }) => {
+    await sidebar.verifySidebarLoaded();
+    await sidebar.selectBrand("Polo");
+    await productsPage.verifyProductsSearch("Brand", "Polo");
+    await sidebar.verifySidebarLoaded();
+    await sidebar.selectBrand("Madame");
+    await productsPage.verifyProductsSearch("Brand", "Madame");
+    await sidebar.verifySidebarLoaded();
+  });
 });
 
 test.describe("orders", () => {

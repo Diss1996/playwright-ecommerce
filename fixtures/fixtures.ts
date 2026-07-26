@@ -16,6 +16,7 @@ import { AddProductsToCartFlow } from "../flows/addProductsToCartFlow";
 import { CheckoutPage } from "../pages/checkoutPage";
 import { PaymentPage } from "../pages/paymentPage";
 import { PaymentDonePage } from "../pages/paymentDonePage";
+import { Sidebar } from "../components/sidebar";
 
 type myFixtures = {
   homepage: Homepage;
@@ -34,12 +35,18 @@ type myFixtures = {
   checkoutPage: CheckoutPage;
   paymentPage: PaymentPage;
   paymentDonePage: PaymentDonePage;
+  sidebar: Sidebar;
 };
 
 export const test = base.extend<myFixtures>({
   homepage: async ({ page }, use) => {
     const homepage = new Homepage(page);
     await use(homepage);
+  },
+  
+  sidebar: async ({ page }, use) => {
+    const sidebar = new Sidebar(page);
+    await use(sidebar);
   },
 
   paymentDonePage: async ({ page }, use) => {

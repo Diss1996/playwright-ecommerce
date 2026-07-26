@@ -1,4 +1,4 @@
-import { Page, Locator } from "@playwright/test";
+import { Page, Locator, expect } from "@playwright/test";
 import { BasePage } from "./basePage";
 
 export class ProductsPage extends BasePage {
@@ -19,9 +19,7 @@ export class ProductsPage extends BasePage {
   constructor(page: Page) {
     super(page);
 
-    this.title = page.getByRole("heading", {
-      name: "All Products",
-    });
+    this.title = page.locator("h2.title.text-center");
 
     this.searchInput = page.locator("#search_product");
     this.searchButton = page.locator("#submit_search");
@@ -61,6 +59,11 @@ export class ProductsPage extends BasePage {
 
   async verifyPageLoaded() {
     await this.verifyVisible(this.title);
+  }
+
+  async verifyProductsSearch(category: string, product: string) {
+    await expect(this.title).toContainText(category);
+    await expect(this.title).toContainText(product);
   }
 
   async search(product: string) {
