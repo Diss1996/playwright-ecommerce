@@ -1,10 +1,22 @@
 import { test, expect } from "../fixtures/fixtures";
 import { createUser } from "../test-data/factories";
 
-test.describe("registration and login", () => {
+// ─────────────────────────────────────────────
+// Registration & Login Tests
+// ─────────────────────────────────────────────
+
+test.describe("Registration and Login", () => {
+  // ─────────────────────────────────────────────
+  // Setup
+  // ─────────────────────────────────────────────
+
   test.beforeEach(async ({ homepage }) => {
     await homepage.goto();
   });
+
+  // ─────────────────────────────────────────────
+  // Registration
+  // ─────────────────────────────────────────────
 
   test("register and delete user", async ({
     navbar,
@@ -12,11 +24,13 @@ test.describe("registration and login", () => {
     registrationFlow,
   }) => {
     const user = createUser();
+
     await registrationFlow.register(user);
 
     await expect(navbar.loggedInUser(user.name)).toBeVisible();
 
     await navbar.deleteAccount();
+
     await deletedAccountPage.verifyPageLoaded();
     await deletedAccountPage.clickContinue();
   });
@@ -28,6 +42,7 @@ test.describe("registration and login", () => {
     signupPage,
   }) => {
     const user = createUser();
+
     await registrationFlow.register(user);
     await navbar.logout();
 
@@ -37,6 +52,7 @@ test.describe("registration and login", () => {
 
     await navbar.goToLogin();
     await loginPage.startSignup(user2);
+
     await expect(signupPage.registrationError).toBeVisible();
 
     // Clean up the original account
@@ -45,6 +61,10 @@ test.describe("registration and login", () => {
     await navbar.deleteAccount();
   });
 
+  // ─────────────────────────────────────────────
+  // Login
+  // ─────────────────────────────────────────────
+
   test("login user with correct credentials", async ({
     navbar,
     loginPage,
@@ -52,19 +72,23 @@ test.describe("registration and login", () => {
     registrationFlow,
   }) => {
     const user = createUser();
+
     await registrationFlow.register(user);
     await navbar.logout();
 
     await loginPage.startLogin(user);
+
     await expect(navbar.loggedInUser(user.name)).toBeVisible();
 
     await navbar.deleteAccount();
+
     await deletedAccountPage.verifyPageLoaded();
     await deletedAccountPage.clickContinue();
   });
 
   test("login user with wrong credentials", async ({ navbar, loginPage }) => {
     const user = createUser();
+
     await navbar.goToLogin();
 
     const invalidUser = {
@@ -73,6 +97,7 @@ test.describe("registration and login", () => {
     };
 
     await loginPage.startLogin(invalidUser);
+
     await expect(loginPage.errorMessage).toBeVisible();
   });
 });

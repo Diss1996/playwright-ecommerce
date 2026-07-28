@@ -3,7 +3,11 @@ import { Product } from "../test-data/products";
 import { BasePage } from "./basePage";
 
 export class ProductDetailsPage extends BasePage {
-  //product information
+  // ─────────────────────────────────────────────
+  // Locators
+  // ─────────────────────────────────────────────
+
+  // Product Information
   readonly productName: Locator;
   readonly category: Locator;
   readonly price: Locator;
@@ -11,25 +15,30 @@ export class ProductDetailsPage extends BasePage {
   readonly condition: Locator;
   readonly brand: Locator;
 
-  //purchase information
+  // Purchase Information
   readonly quantityInput: Locator;
   readonly addToCartButton: Locator;
 
-  //add to cart modal
+  // Add to Cart Modal
   readonly addedModal: Locator;
   readonly viewCartLink: Locator;
   readonly continueShoppingButton: Locator;
 
-  //review form
+  // Review Form
   readonly reviewNameInput: Locator;
   readonly reviewEmailInput: Locator;
   readonly reviewTextArea: Locator;
   readonly submitReviewButton: Locator;
   readonly reviewSuccessMessage: Locator;
 
+  // ─────────────────────────────────────────────
+  // Constructor
+  // ─────────────────────────────────────────────
+
   constructor(page: Page) {
     super(page);
 
+    // Product Information
     this.productName = page.locator(".product-information h2");
     this.category = page.locator(".product-information p").first();
     this.price = page.locator(".product-information span > span");
@@ -43,11 +52,13 @@ export class ProductDetailsPage extends BasePage {
       hasText: "Brand:",
     });
 
+    // Purchase Information
     this.quantityInput = page.locator("#quantity");
     this.addToCartButton = page.getByRole("button", {
       name: "Add to cart",
     });
 
+    // Add to Cart Modal
     this.addedModal = page.locator("#cartModal");
     this.viewCartLink = this.addedModal.getByRole("link", {
       name: "View Cart",
@@ -56,6 +67,7 @@ export class ProductDetailsPage extends BasePage {
       name: "Continue Shopping",
     });
 
+    // Review Form
     this.reviewNameInput = page.locator("#name");
     this.reviewEmailInput = page.locator("#email");
     this.reviewTextArea = page.locator("#review");
@@ -63,54 +75,53 @@ export class ProductDetailsPage extends BasePage {
     this.reviewSuccessMessage = page.locator("#review-section");
   }
 
+  // ─────────────────────────────────────────────
+  // Page Verification
+  // ─────────────────────────────────────────────
+
+  /**
+   * Verifies that the product details page has loaded successfully
+   * by checking that the product name is visible.
+   */
   async verifyPageLoaded() {
     await this.verifyVisible(this.productName);
   }
 
-  async setQuantity(quantity: number) {
-    await this.quantityInput.fill(quantity.toString());
-  }
+  // ─────────────────────────────────────────────
+  // Navigation
+  // ─────────────────────────────────────────────
 
+  /**
+   * Navigates directly to a product details page using the
+   * product ID in the URL.
+   *
+   * @param id - The ID of the product to open.
+   */
   async openProductById(id: string) {
-    await this.goto(`/product_details/${id}`); //opens by id in the url
+    await this.goto(`/product_details/${id}`);
   }
 
-  async addToCart() {
-    await this.click(this.addToCartButton);
+  /**
+   * Navigates back to the previously visited page.
+   */
+  async goBack() {
+    await this.page.goBack();
   }
 
-  async verifyAddedModalVisible() {
-    await this.verifyVisible(this.addedModal);
-  }
+  // ─────────────────────────────────────────────
+  // Product Information
+  // ─────────────────────────────────────────────
 
-  async continueShopping() {
-    await this.click(this.continueShoppingButton);
-  }
-
-  async viewCart() {
-    await this.click(this.viewCartLink);
-  }
-
-  async submitReview(name: string, email: string, review: string) {
-    //need to make review test-data
-    await this.reviewNameInput.fill(name);
-    await this.reviewEmailInput.fill(email);
-    await this.reviewTextArea.fill(review);
-
-    await this.click(this.submitReviewButton);
-  }
-
-  async matchesSearch(searchTerm: string): Promise<boolean> {
-    const term = searchTerm.toLowerCase();
-
-    const category = ((await this.category.textContent()) ?? "").toLowerCase();
-    const productName = (
-      (await this.productName.textContent()) ?? ""
-    ).toLowerCase();
-
-    return category.includes(term) || productName.includes(term); //returns true if either match
-  }
-
+  /**
+   * Retrieves the product information displayed on the page
+   * and returns it as a Product object.
+   *
+   * @param id - The ID of the product.
+   * @param quantity - The quantity associated with the product.
+   *
+   * @returns A Product object containing the product details
+   * displayed on the page.
+   */
   async getProductInformation(id: string, quantity: number): Promise<Product> {
     return {
       id,
@@ -132,7 +143,92 @@ export class ProductDetailsPage extends BasePage {
     };
   }
 
-  async goBack() {
-    await this.page.goBack();
+  /**
+   * Checks whether the supplied search term matches either
+   * the product name or product category.
+   *
+   * The comparison is case-insensitive.
+   *
+   * @param searchTerm - The search term to compare against
+   * the product name and category.
+   *
+   * @returns True if the search term is found in either the
+   * product name or category; otherwise, false.
+   */
+  async matchesSearch(searchTerm: string): Promise<boolean> {
+    const term = searchTerm.toLowerCase();
+
+    const category = ((await this.category.textContent()) ?? "").toLowerCase();
+    const productName = (
+      (await this.productName.textContent()) ?? ""
+    ).toLowerCase();
+
+    return category.includes(term) || productName.includes(term);
+  }
+
+  // ─────────────────────────────────────────────
+  // Purchase
+  // ─────────────────────────────────────────────
+
+  /**
+   * Sets the quantity of the product to be added to the cart.
+   *
+   * @param quantity - The number of units to add to the cart.
+   */
+  async setQuantity(quantity: number) {
+    await this.quantityInput.fill(quantity.toString());
+  }
+
+  /**
+   * Clicks the Add to Cart button to add the selected product
+   * and quantity to the shopping cart.
+   */
+  async addToCart() {
+    await this.click(this.addToCartButton);
+  }
+
+  // ─────────────────────────────────────────────
+  // Add to Cart Modal
+  // ─────────────────────────────────────────────
+
+  /**
+   * Verifies that the Add to Cart confirmation modal is visible.
+   */
+  async verifyAddedModalVisible() {
+    await this.verifyVisible(this.addedModal);
+  }
+
+  /**
+   * Clicks Continue Shopping in the Add to Cart confirmation modal.
+   */
+  async continueShopping() {
+    await this.click(this.continueShoppingButton);
+  }
+
+  /**
+   * Clicks View Cart in the Add to Cart confirmation modal
+   * to navigate to the shopping cart.
+   */
+  async viewCart() {
+    await this.click(this.viewCartLink);
+  }
+
+  // ─────────────────────────────────────────────
+  // Product Review
+  // ─────────────────────────────────────────────
+
+  /**
+   * Fills out and submits the product review form.
+   *
+   * @param name - The name to submit with the review.
+   * @param email - The email address to submit with the review.
+   * @param review - The review text to submit.
+   */
+  async submitReview(name: string, email: string, review: string) {
+    await this.reviewNameInput.fill(name);
+    await this.reviewEmailInput.fill(email);
+    await this.reviewTextArea.fill(review);
+
+    await this.click(this.submitReviewButton);
   }
 }

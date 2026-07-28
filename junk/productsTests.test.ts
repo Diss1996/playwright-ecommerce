@@ -99,6 +99,7 @@ test.describe("products and cart", () => {
   });
 
   test("sidebar category products", async ({ productsPage, sidebar }) => {
+    //giving errors related to second category search not collapsing accordion properly
     await sidebar.verifySidebarLoaded();
     await sidebar.selectCategory("Women", "Dress");
     await productsPage.verifyProductsSearch("Women", "Dress");
@@ -118,6 +119,22 @@ test.describe("products and cart", () => {
     await sidebar.selectBrand("Madame");
     await productsPage.verifyProductsSearch("Brand", "Madame");
     await sidebar.verifySidebarLoaded();
+  });
+
+  test("search product and verify cart after login", async ({
+    productsPage,
+    cartPage,
+  }) => {
+    const searchTerm = "V-neck";
+
+    await productsPage.search(searchTerm);
+    await productsPage.verifyProductNamesContain(searchTerm);
+
+    await productsPage.addProductToCart("28");
+    await productsPage.clickViewCart();
+
+    await cartPage.verifyProductInCart("28");
+    //UNFINISHED
   });
 });
 

@@ -3,6 +3,10 @@ import { BasePage } from "./basePage";
 import { ContactMessage } from "../test-data/contactMessage";
 
 export class ContactUsPage extends BasePage {
+  // ─────────────────────────────────────────────
+  // Locators
+  // ─────────────────────────────────────────────
+
   readonly heading: Locator;
 
   readonly nameInput: Locator;
@@ -14,6 +18,10 @@ export class ContactUsPage extends BasePage {
   readonly submitButton: Locator;
 
   readonly successMessage: Locator;
+
+  // ─────────────────────────────────────────────
+  // Constructor
+  // ─────────────────────────────────────────────
 
   constructor(page: Page) {
     super(page);
@@ -33,14 +41,41 @@ export class ContactUsPage extends BasePage {
     this.successMessage = page.locator(".status.alert-success");
   }
 
+  // ─────────────────────────────────────────────
+  // Navigation
+  // ─────────────────────────────────────────────
+
+  /**
+   * Navigates to the Contact Us page.
+   */
   async goto() {
     await super.goto("/contact_us");
   }
 
+  // ─────────────────────────────────────────────
+  // Page Verification
+  // ─────────────────────────────────────────────
+
+  /**
+   * Verifies that the Contact Us page has loaded successfully
+   * by checking that the page heading is visible.
+   */
   async verifyPageLoaded() {
     await this.verifyVisible(this.heading);
   }
 
+  // ─────────────────────────────────────────────
+  // Contact Form
+  // ─────────────────────────────────────────────
+
+  /**
+   * Fills out the Contact Us form using the supplied contact message data.
+   *
+   * If an attachment is provided, the file is also uploaded
+   * using the file upload input.
+   *
+   * @param contact - The contact message data used to populate the form.
+   */
   async fillContactForm(contact: ContactMessage) {
     await this.nameInput.fill(contact.name);
     await this.emailInput.fill(contact.email);
@@ -52,6 +87,17 @@ export class ContactUsPage extends BasePage {
     }
   }
 
+  // ─────────────────────────────────────────────
+  // Form Submission
+  // ─────────────────────────────────────────────
+
+  /**
+   * Submits the Contact Us form and handles the confirmation dialog
+   * displayed by the application.
+   *
+   * The method verifies that the dialog is a confirmation dialog
+   * with the expected message before accepting it.
+   */
   async submit() {
     this.page.once("dialog", async (dialog) => {
       expect(dialog.type()).toBe("confirm");

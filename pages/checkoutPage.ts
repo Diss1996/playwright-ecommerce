@@ -32,48 +32,95 @@ export class CheckoutPage extends BasePage {
     });
   }
 
+  // ─────────────────────────────────────────────
+  // Page Verification
+  // ─────────────────────────────────────────────
+
+  /**
+   * Verifies that the checkout page has loaded successfully
+   * by checking that the checkout information section is visible.
+   */
   async verifyPageLoaded() {
     await this.verifyVisible(this.checkoutInfo);
   }
 
+  // ─────────────────────────────────────────────
+  // Order Information
+  // ─────────────────────────────────────────────
+
+  /**
+   * Returns the number of products currently displayed
+   * in the checkout order.
+   *
+   * @returns The number of product rows in the order.
+   */
   async getProductCount() {
     return await this.orderRows.count();
   }
 
+  /**
+   * Returns the names of all products in the checkout order.
+   *
+   * @returns An array containing the names of the ordered products.
+   */
   async getProductNames() {
     return await this.orderRows
       .locator(".cart_description h4")
       .allTextContents();
   }
 
+  /**
+   * Returns the categories of all products in the checkout order.
+   *
+   * @returns An array containing the categories of the ordered products.
+   */
   async getProductCategories() {
     return await this.orderRows
       .locator(".cart_description p")
       .allTextContents();
   }
 
+  /**
+   * Returns the displayed prices of all products in the checkout order.
+   *
+   * @returns An array containing the prices of the ordered products.
+   */
   async getProductPrices() {
     return await this.orderRows.locator(".cart_price p").allTextContents();
   }
 
+  /**
+   * Returns the quantities of all products in the checkout order.
+   *
+   * @returns An array containing the quantities of the ordered products
+   * as displayed text.
+   */
   async getProductQuantities() {
     return await this.orderRows
       .locator(".cart_quantity button")
       .allTextContents();
   }
 
+  /**
+   * Returns the total price of each product in the checkout order.
+   *
+   * @returns An array containing the total price for each ordered product.
+   */
   async getProductTotals() {
     return await this.orderRows.locator(".cart_total_price").allTextContents();
   }
 
-  async addOrderComment(comment: string) {
-    await this.orderComment.fill(comment);
-  }
+  // ─────────────────────────────────────────────
+  // Address Verification
+  // ─────────────────────────────────────────────
 
-  async placeOrder() {
-    await this.click(this.placeOrderButton);
-  }
-
+  /**
+   * Verifies that an address displayed on the checkout page
+   * matches the expected user information.
+   *
+   * @param address - The locator for the address section to verify.
+   * @param user - The user data containing the expected address information.
+   */
   async verifyAddress(address: Locator, user: User) {
     await this.verifyText(
       address.locator(".address_firstname.address_lastname"),
@@ -112,14 +159,40 @@ export class CheckoutPage extends BasePage {
     await this.verifyText(address.locator(".address_phone"), user.mobileNumber);
   }
 
+  /**
+   * Verifies that the delivery address matches the expected
+   * address information for the specified user.
+   *
+   * @param user - The user data containing the expected delivery address.
+   */
   async verifyDeliveryAddress(user: User) {
     await this.verifyAddress(this.deliveryAddress, user);
   }
 
+  /**
+   * Verifies that the billing address matches the expected
+   * address information for the specified user.
+   *
+   * @param user - The user data containing the expected billing address.
+   */
   async verifyBillingAddress(user: User) {
     await this.verifyAddress(this.billingAddress, user);
   }
 
+  // ─────────────────────────────────────────────
+  // Order Validation
+  // ─────────────────────────────────────────────
+
+  /**
+   * Verifies that the products displayed in the checkout order
+   * match the expected cart products.
+   *
+   * The method verifies the number of products and compares
+   * each product's name, category, price, quantity, and total.
+   *
+   * @param products - The expected cart products to compare against
+   * the checkout order.
+   */
   async verifyProducts(products: CartProduct[]) {
     const count = await this.getProductCount();
 
@@ -154,5 +227,25 @@ export class CheckoutPage extends BasePage {
         products[i].total,
       );
     }
+  }
+
+  // ─────────────────────────────────────────────
+  // Order Actions
+  // ─────────────────────────────────────────────
+
+  /**
+   * Adds a comment to the order using the order comment field.
+   *
+   * @param comment - The comment to add to the order.
+   */
+  async addOrderComment(comment: string) {
+    await this.orderComment.fill(comment);
+  }
+
+  /**
+   * Clicks the Place Order button to proceed with placing the order.
+   */
+  async placeOrder() {
+    await this.click(this.placeOrderButton);
   }
 }

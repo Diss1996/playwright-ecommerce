@@ -3,55 +3,72 @@ import { BasePage } from "./basePage";
 import { User } from "../test-data/users";
 
 export class SignupPage extends BasePage {
+  // ─────────────────────────────────────────────
+  // Locators
+  // ─────────────────────────────────────────────
+
+  // Account Information
   readonly mrRadio: Locator;
   readonly mrsRadio: Locator;
-
   readonly name: Locator;
   readonly password: Locator;
 
+  // Date of Birth
   readonly day: Locator;
   readonly month: Locator;
   readonly year: Locator;
 
+  // Preferences
   readonly newsletterBox: Locator;
   readonly specialOffersBox: Locator;
 
+  // Personal Information
   readonly firstName: Locator;
   readonly lastName: Locator;
   readonly company: Locator;
 
+  // Address Information
   readonly address: Locator;
   readonly address2: Locator;
-
   readonly country: Locator;
   readonly state: Locator;
   readonly city: Locator;
   readonly zipcode: Locator;
   readonly mobileNumber: Locator;
 
+  // Registration
   readonly createAccountButton: Locator;
   readonly registrationError: Locator;
+
+  // ─────────────────────────────────────────────
+  // Constructor
+  // ─────────────────────────────────────────────
 
   constructor(page: Page) {
     super(page);
 
+    // Account Information
     this.mrRadio = page.locator("#id_gender1");
     this.mrsRadio = page.locator("#id_gender2");
 
     this.name = page.locator('[data-qa="name"]');
     this.password = page.locator('[data-qa="password"]');
 
+    // Date of Birth
     this.day = page.locator('[data-qa="days"]');
     this.month = page.locator('[data-qa="months"]');
     this.year = page.locator('[data-qa="years"]');
 
+    // Preferences
     this.newsletterBox = page.locator("#newsletter");
     this.specialOffersBox = page.locator("#optin");
 
+    // Personal Information
     this.firstName = page.locator('[data-qa="first_name"]');
     this.lastName = page.locator('[data-qa="last_name"]');
     this.company = page.locator('[data-qa="company"]');
 
+    // Address Information
     this.address = page.locator('[data-qa="address"]');
     this.address2 = page.locator('[data-qa="address2"]');
 
@@ -61,16 +78,38 @@ export class SignupPage extends BasePage {
     this.zipcode = page.locator('[data-qa="zipcode"]');
     this.mobileNumber = page.locator('[data-qa="mobile_number"]');
 
+    // Registration
     this.createAccountButton = page.locator('[data-qa="create-account"]');
     this.registrationError = page.locator("p", {
       hasText: "Email Address already exist!",
     });
   }
 
+  // ─────────────────────────────────────────────
+  // Navigation
+  // ─────────────────────────────────────────────
+
+  /**
+   * Navigates to the Signup page.
+   */
   async goto() {
     await super.goto("/signup");
   }
 
+  // ─────────────────────────────────────────────
+  // Registration
+  // ─────────────────────────────────────────────
+
+  /**
+   * Completes the account registration form using the supplied
+   * user data and submits the form.
+   *
+   * The method fills required account, personal, and address
+   * information and conditionally selects optional preferences
+   * and fills optional fields when provided.
+   *
+   * @param user - The user data used to populate the registration form.
+   */
   async completeRegistration(user: User) {
     if (user.title === "Mr") {
       await this.mrRadio.check();
