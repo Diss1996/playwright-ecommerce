@@ -167,16 +167,6 @@ export class CartPage extends BasePage {
     await expect(productRow).toBeHidden();
   }
 
-  /**
-   * Verifies that a product with the specified ID is visible in the cart.
-   *
-   * @param productId - The ID of the product to verify.
-   */
-  async verifyProductInCart(productId: string) {
-    const productRow = this.cartRows.locator(`#product-${productId}`);
-
-    await expect(productRow).toBeVisible();
-  }
 
   // ─────────────────────────────────────────────
   // Cart Product Validation

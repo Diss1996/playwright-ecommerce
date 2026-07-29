@@ -163,6 +163,30 @@ export class ProductsPage extends BasePage {
     return await this.page.locator(".productinfo p").allTextContents();
   }
 
+  /**
+   * Returns the ID of the given product
+   * @param productName - the name of the product of which to find the id
+   * @returns The products id
+   */
+  async getProductIdByName(productName: string): Promise<string> {
+    const productCard = this.productCards.filter({
+      has: this.page.getByText(productName, { exact: true }),
+    });
+
+    const productId = await productCard
+      .locator("a.add-to-cart")
+      .first()
+      .getAttribute("data-product-id");
+
+    if (!productId) {
+      throw new Error(
+        `Could not find product ID for product: "${productName}"`,
+      );
+    }
+
+    return productId;
+  }
+
   // ─────────────────────────────────────────────
   // Product Actions
   // ─────────────────────────────────────────────
