@@ -16,13 +16,6 @@ export class ProductsPage extends BasePage {
   readonly searchInput: Locator;
   readonly searchButton: Locator;
 
-  // Add to Cart Modal
-  readonly addedModal: Locator;
-  readonly addedModalTitle: Locator;
-  readonly addedModalMessage: Locator;
-  readonly viewCartLink: Locator;
-  readonly continueShoppingButton: Locator;
-
   // ─────────────────────────────────────────────
   // Constructor
   // ─────────────────────────────────────────────
@@ -42,21 +35,6 @@ export class ProductsPage extends BasePage {
     // Search
     this.searchInput = page.locator("#search_product");
     this.searchButton = page.locator("#submit_search");
-
-    // Add to Cart Modal
-    this.addedModal = page.locator(".modal-content");
-    this.addedModalTitle = this.addedModal.getByRole("heading", {
-      name: "Added!",
-    });
-    this.addedModalMessage = this.addedModal.getByText(
-      "Your product has been added to cart.",
-    );
-    this.viewCartLink = this.addedModal.getByRole("link", {
-      name: "View Cart",
-    });
-    this.continueShoppingButton = this.addedModal.getByRole("button", {
-      name: "Continue Shopping",
-    });
   }
 
   // ─────────────────────────────────────────────
@@ -215,30 +193,5 @@ export class ProductsPage extends BasePage {
       .first();
 
     await this.click(button);
-  }
-
-  // ─────────────────────────────────────────────
-  // Add to Cart Modal
-  // ─────────────────────────────────────────────
-
-  /**
-   * Verifies that the Add to Cart confirmation modal is visible.
-   */
-  async verifyAddedModalVisible() {
-    await this.verifyVisible(this.addedModal);
-  }
-
-  /**
-   * Clicks the View Cart link in the Add to Cart confirmation modal.
-   */
-  async clickViewCart() {
-    await this.click(this.viewCartLink);
-  }
-
-  /**
-   * Clicks Continue Shopping in the Add to Cart confirmation modal.
-   */
-  async continueShopping() {
-    await this.click(this.continueShoppingButton);
   }
 }

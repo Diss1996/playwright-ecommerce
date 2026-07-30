@@ -19,9 +19,9 @@ test.describe("Cart", () => {
   // ─────────────────────────────────────────────
 
   test("user can add multiple products to the cart", async ({
-    productsPage,
     addProductsToCartFlow,
     cartPage,
+    addedToCartModal,
   }) => {
     const products = await addProductsToCartFlow.addProducts([
       {
@@ -34,15 +34,14 @@ test.describe("Cart", () => {
       },
     ]);
 
-    await productsPage.clickViewCart();
-
+    await addedToCartModal.viewCart();
     await cartPage.verifyProducts(products);
   });
 
   test("user can add a product to the cart with a selected quantity", async ({
-    productsPage,
     addProductsToCartFlow,
     cartPage,
+    addedToCartModal,
   }) => {
     const products = await addProductsToCartFlow.addProducts([
       {
@@ -51,8 +50,7 @@ test.describe("Cart", () => {
       },
     ]);
 
-    await productsPage.clickViewCart();
-
+    await addedToCartModal.viewCart();
     await cartPage.verifyProducts(products);
   });
 
@@ -61,9 +59,9 @@ test.describe("Cart", () => {
   // ─────────────────────────────────────────────
 
   test("user can remove products from the cart", async ({
-    productsPage,
     addProductsToCartFlow,
     cartPage,
+    addedToCartModal,
   }) => {
     const products = await addProductsToCartFlow.addProducts([
       {
@@ -80,7 +78,7 @@ test.describe("Cart", () => {
       },
     ]);
 
-    await productsPage.clickViewCart();
+    await addedToCartModal.viewCart();
 
     await cartPage.verifyProducts(products);
 
@@ -94,5 +92,20 @@ test.describe("Cart", () => {
     );
 
     await cartPage.verifyProducts(remainingProducts);
+  });
+
+  test("user can add a product to the cart from recommended on homepage", async ({
+    homepage,
+    addedToCartModal,
+    cartPage,
+  }) => {
+    await homepage.goto();
+    await homepage.verifyRecommendedItemsLoaded();
+
+    const productId = "6";
+    await homepage.addRecommendedItemToCart(productId);
+    await addedToCartModal.viewCart();
+
+    await cartPage.verifyProductInCart(productId);
   });
 });

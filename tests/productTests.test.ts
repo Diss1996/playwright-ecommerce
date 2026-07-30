@@ -60,6 +60,7 @@ test.describe("Products", () => {
   test("user can search for a product and add it to the cart", async ({
     productsPage,
     cartPage,
+    addedToCartModal
   }) => {
     const searchTerm = "V-neck";
 
@@ -69,7 +70,7 @@ test.describe("Products", () => {
       "Pure Cotton V-Neck T-Shirt",
     );
     await productsPage.addProductToCart(productId);
-    await productsPage.clickViewCart();
+    await addedToCartModal.viewCart();
 
     const productNames = await cartPage.getProductNames();
 
@@ -119,5 +120,14 @@ test.describe("Products", () => {
     await productsPage.verifyProductsSearch("Brand", "Madame");
 
     await sidebar.verifySidebarLoaded();
+  });
+
+    test("user can add review to product", async ({
+    productsPage,
+    productsDetailsPage
+  }) => {
+    await productsPage.openProduct(1);
+    await productsDetailsPage.submitReview("Tester", "Tester@mail.com", "Test text for review on product detail page");
+    await productsDetailsPage.verifyReviewSubmission();
   });
 });

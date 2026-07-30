@@ -1,6 +1,7 @@
 import { ProductsPage } from "../pages/productsPage";
 import { ProductDetailsPage } from "../pages/productDetailsPage";
 import { Product } from "../test-data/products";
+import { AddedToCartModal } from "../components/addedToCartModal";
 
 export class AddProductsToCartFlow {
   // ─────────────────────────────────────────────
@@ -10,6 +11,7 @@ export class AddProductsToCartFlow {
   constructor(
     private productsPage: ProductsPage,
     private productsDetailsPage: ProductDetailsPage,
+    private addedToCartModal: AddedToCartModal
   ) {}
 
   // ─────────────────────────────────────────────
@@ -54,11 +56,10 @@ export class AddProductsToCartFlow {
 
       await this.productsDetailsPage.setQuantity(quantity);
       await this.productsDetailsPage.addToCart();
-
-      await this.productsDetailsPage.verifyAddedModalVisible();
+      await this.addedToCartModal.verifyVisible();
 
       if (i < productsToAdd.length - 1) {
-        await this.productsDetailsPage.continueShopping();
+        await this.addedToCartModal.continueShopping();
       }
     }
 

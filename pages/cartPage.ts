@@ -109,6 +109,37 @@ export class CartPage extends BasePage {
   }
 
   /**
+   * Returns the product ID from a product's link in the cart.
+   *
+   * @param productName - The name of the product to find.
+   * @returns The product ID contained in the product's URL.
+   */
+  async getProductIdByName(productName: string): Promise<string> {
+    const productLink = this.cartRows
+      .locator(".cart_description h4 a")
+      .filter({ hasText: productName });
+
+    const href = await productLink.getAttribute("href");
+
+    if (!href) {
+      throw new Error(`Could not find URL for product "${productName}".`);
+    }
+
+    return href.split("/").pop() ?? "";
+  }
+
+ /**
+ * Verifies that a product with the specified ID exists in the cart.
+ *
+ * @param productId - The ID of the product to look for.
+ */
+async verifyProductInCart(productId: string) {
+  const productRow = this.page.locator(`#product-${productId}`);
+
+  await expect(productRow).toBeVisible();
+}
+
+  /**
    * Retrieves all products currently in the cart and returns their
    * details as CartProduct objects.
    *
@@ -166,7 +197,6 @@ export class CartPage extends BasePage {
 
     await expect(productRow).toBeHidden();
   }
-
 
   // ─────────────────────────────────────────────
   // Cart Product Validation

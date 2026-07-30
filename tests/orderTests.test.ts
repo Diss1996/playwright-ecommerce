@@ -29,6 +29,7 @@ test.describe("Orders", () => {
     paymentPage,
     paymentDonePage,
     deletedAccountPage,
+    addedToCartModal,
   }) => {
     const products = await addProductsToCartFlow.addProducts([
       {
@@ -37,7 +38,7 @@ test.describe("Orders", () => {
       },
     ]);
 
-    await productsPage.clickViewCart();
+    await addedToCartModal.viewCart();
 
     await cartPage.verifyProducts(products);
     await cartPage.proceedToCheckout();
@@ -76,7 +77,6 @@ test.describe("Orders", () => {
   // ─────────────────────────────────────────────
 
   test("registered user can complete an order", async ({
-    productsPage,
     addProductsToCartFlow,
     cartPage,
     registrationFlow,
@@ -85,6 +85,7 @@ test.describe("Orders", () => {
     paymentPage,
     paymentDonePage,
     deletedAccountPage,
+    addedToCartModal,
   }) => {
     const user = createUser();
 
@@ -105,7 +106,7 @@ test.describe("Orders", () => {
       },
     ]);
 
-    await productsPage.clickViewCart();
+    await addedToCartModal.viewCart();
 
     await cartPage.verifyProducts(products);
     await cartPage.proceedToCheckout();
@@ -135,7 +136,6 @@ test.describe("Orders", () => {
   // ─────────────────────────────────────────────
 
   test("user can log out, log back in, and complete an order", async ({
-    productsPage,
     addProductsToCartFlow,
     cartPage,
     registrationFlow,
@@ -145,6 +145,7 @@ test.describe("Orders", () => {
     paymentDonePage,
     deletedAccountPage,
     loginPage,
+    addedToCartModal,
   }) => {
     const user = createUser();
 
@@ -167,7 +168,7 @@ test.describe("Orders", () => {
       },
     ]);
 
-    await productsPage.clickViewCart();
+    await addedToCartModal.viewCart();
 
     await cartPage.verifyProducts(products);
     await cartPage.proceedToCheckout();

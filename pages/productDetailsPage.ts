@@ -19,11 +19,6 @@ export class ProductDetailsPage extends BasePage {
   readonly quantityInput: Locator;
   readonly addToCartButton: Locator;
 
-  // Add to Cart Modal
-  readonly addedModal: Locator;
-  readonly viewCartLink: Locator;
-  readonly continueShoppingButton: Locator;
-
   // Review Form
   readonly reviewNameInput: Locator;
   readonly reviewEmailInput: Locator;
@@ -58,21 +53,14 @@ export class ProductDetailsPage extends BasePage {
       name: "Add to cart",
     });
 
-    // Add to Cart Modal
-    this.addedModal = page.locator("#cartModal");
-    this.viewCartLink = this.addedModal.getByRole("link", {
-      name: "View Cart",
-    });
-    this.continueShoppingButton = this.addedModal.getByRole("button", {
-      name: "Continue Shopping",
-    });
-
     // Review Form
     this.reviewNameInput = page.locator("#name");
     this.reviewEmailInput = page.locator("#email");
     this.reviewTextArea = page.locator("#review");
     this.submitReviewButton = page.locator("#button-review");
-    this.reviewSuccessMessage = page.locator("#review-section");
+    this.reviewSuccessMessage = page.getByText("Thank you for your review.", {
+      exact: true,
+    });
   }
 
   // ─────────────────────────────────────────────
@@ -85,6 +73,14 @@ export class ProductDetailsPage extends BasePage {
    */
   async verifyPageLoaded() {
     await this.verifyVisible(this.productName);
+  }
+
+  /**
+   * Verifies that a review has been successfully submitted by checking
+   * that the success message is visible
+   */
+  async verifyReviewSubmission() {
+    await this.verifyVisible(this.reviewSuccessMessage);
   }
 
   // ─────────────────────────────────────────────
@@ -185,32 +181,6 @@ export class ProductDetailsPage extends BasePage {
    */
   async addToCart() {
     await this.click(this.addToCartButton);
-  }
-
-  // ─────────────────────────────────────────────
-  // Add to Cart Modal
-  // ─────────────────────────────────────────────
-
-  /**
-   * Verifies that the Add to Cart confirmation modal is visible.
-   */
-  async verifyAddedModalVisible() {
-    await this.verifyVisible(this.addedModal);
-  }
-
-  /**
-   * Clicks Continue Shopping in the Add to Cart confirmation modal.
-   */
-  async continueShopping() {
-    await this.click(this.continueShoppingButton);
-  }
-
-  /**
-   * Clicks View Cart in the Add to Cart confirmation modal
-   * to navigate to the shopping cart.
-   */
-  async viewCart() {
-    await this.click(this.viewCartLink);
   }
 
   // ─────────────────────────────────────────────

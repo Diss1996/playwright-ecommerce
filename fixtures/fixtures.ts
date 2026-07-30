@@ -17,6 +17,7 @@ import { CheckoutPage } from "../pages/checkoutPage";
 import { PaymentPage } from "../pages/paymentPage";
 import { PaymentDonePage } from "../pages/paymentDonePage";
 import { Sidebar } from "../components/sidebar";
+import { AddedToCartModal } from "../components/addedToCartModal";
 
 type myFixtures = {
   homepage: Homepage;
@@ -36,6 +37,7 @@ type myFixtures = {
   paymentPage: PaymentPage;
   paymentDonePage: PaymentDonePage;
   sidebar: Sidebar;
+  addedToCartModal: AddedToCartModal;
 };
 
 export const test = base.extend<myFixtures>({
@@ -76,6 +78,10 @@ export const test = base.extend<myFixtures>({
 
   footer: async ({ page }, use) => {
     await use(new Footer(page));
+  },
+
+  addedToCartModal: async ({ page }, use) => {
+    await use(new AddedToCartModal(page));
   },
 
   contactUsPage: async ({ page }, use) => {
@@ -127,10 +133,14 @@ export const test = base.extend<myFixtures>({
     await use(registrationFlow);
   },
 
-  addProductsToCartFlow: async ({ productsPage, productsDetailsPage }, use) => {
+  addProductsToCartFlow: async (
+    { productsPage, productsDetailsPage, addedToCartModal },
+    use,
+  ) => {
     const addProductsToCartFlow = new AddProductsToCartFlow(
       productsPage,
       productsDetailsPage,
+      addedToCartModal,
     );
 
     await use(addProductsToCartFlow);
