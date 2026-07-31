@@ -90,19 +90,9 @@ test.describe("Products", () => {
     sidebar,
   }) => {
     await sidebar.verifySidebarLoaded();
-
     await sidebar.selectCategory("Women", "Dress");
     await productsPage.verifyProductsSearch("Women", "Dress");
     await sidebar.verifySidebarLoaded();
-
-    // TODO: issues with accordion not collapsing
-    // await sidebar.selectCategory("Men", "Jeans");
-    // await productsPage.verifyProductsSearch("Men", "Jeans");
-
-    // await sidebar.verifySidebarLoaded();
-
-    // await sidebar.selectCategory("Kids", "Tops & Shirts");
-    // await productsPage.verifyProductsSearch("Kids", "Tops & Shirts");
   });
 
   test("user can filter products by brand", async ({

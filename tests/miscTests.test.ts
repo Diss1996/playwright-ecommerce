@@ -1,4 +1,5 @@
 import { test, expect } from "../fixtures/fixtures";
+import { createContactMessage } from "../test-data/factories";
 
 test("footer subscription", async ({ homepage, footer }) => {
   await homepage.goto();
@@ -7,8 +8,10 @@ test("footer subscription", async ({ homepage, footer }) => {
   await footer.verifySubscriptionSuccess();
 });
 
-// test("contact form", async ({ homepage, navbar, contactUsPage }) => {
-//   //doesnt work in chromium, issues with the confirm prompt
+// test("contact form", async ({ homepage, navbar, contactUsPage, page }) => {
+//   //inconsisently works in chromium, issues with the confirm prompt
+
+
 //   const contactUsMessage = createContactMessage();
 
 //   await homepage.goto();
