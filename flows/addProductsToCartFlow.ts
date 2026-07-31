@@ -1,4 +1,3 @@
-import { ProductsPage } from "../pages/productsPage";
 import { ProductDetailsPage } from "../pages/productDetailsPage";
 import { Product } from "../test-data/products";
 import { AddedToCartModal } from "../components/addedToCartModal";
@@ -9,7 +8,6 @@ export class AddProductsToCartFlow {
   // ─────────────────────────────────────────────
 
   constructor(
-    private productsPage: ProductsPage,
     private productsDetailsPage: ProductDetailsPage,
     private addedToCartModal: AddedToCartModal
   ) {}

@@ -3,8 +3,8 @@ import { Navbar } from "../components/navbar";
 import { LoginPage } from "../pages/loginPage";
 import { SignupPage } from "../pages/signupPage";
 import { AccountCreatedPage } from "../pages/accountCreatedPage";
-import { CartPage } from "../pages/cartPage";
 import { User } from "../test-data/users";
+import { CheckoutModal } from "../components/checkoutModal";
 
 export class RegistrationFlow {
   // ─────────────────────────────────────────────
@@ -16,7 +16,7 @@ export class RegistrationFlow {
     private loginPage: LoginPage,
     private signupPage: SignupPage,
     private accountCreatedPage: AccountCreatedPage,
-    private cartPage: CartPage,
+    private checkoutModal: CheckoutModal,
   ) {}
 
   // ─────────────────────────────────────────────
@@ -39,17 +39,11 @@ export class RegistrationFlow {
    */
   async register(user: User) {
     await this.navbar.goToLogin();
-
     await this.loginPage.verifyPageLoaded();
-
     await this.loginPage.startSignup(user);
-
     await this.signupPage.completeRegistration(user);
-
     await this.accountCreatedPage.verifyPageLoaded();
-
     await this.accountCreatedPage.clickContinue();
-
     await expect(this.navbar.loggedInUser(user.name)).toBeVisible();
   }
 
@@ -68,18 +62,12 @@ export class RegistrationFlow {
    * @param user - The user data used to create the new account.
    */
   async registerFromCheckout(user: User) {
-    await this.cartPage.clickLogin();
-
+    await this.checkoutModal.clickLogin();
     await this.loginPage.verifyPageLoaded();
-
     await this.loginPage.startSignup(user);
-
     await this.signupPage.completeRegistration(user);
-
     await this.accountCreatedPage.verifyPageLoaded();
-
     await this.accountCreatedPage.clickContinue();
-
     await expect(this.navbar.loggedInUser(user.name)).toBeVisible();
   }
 }

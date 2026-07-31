@@ -11,11 +11,6 @@ export class CartPage extends BasePage {
   readonly cartRows: Locator;
 
   readonly checkoutButton: Locator;
-
-  readonly checkoutModal: Locator;
-  readonly continueCartButton: Locator;
-  readonly loginLink: Locator;
-
   readonly emptyCartMessage: Locator;
 
   // ─────────────────────────────────────────────
@@ -29,15 +24,6 @@ export class CartPage extends BasePage {
     this.cartRows = page.locator("#cart_info_table tbody tr");
 
     this.checkoutButton = page.locator(".check_out");
-
-    this.checkoutModal = page.locator("#checkoutModal");
-    this.continueCartButton = this.checkoutModal.getByRole("button", {
-      name: "Continue On Cart",
-    });
-    this.loginLink = this.checkoutModal.getByRole("link", {
-      name: "Register / Login",
-    });
-
     this.emptyCartMessage = page.locator("#empty_cart");
   }
 
@@ -234,27 +220,6 @@ async verifyProductInCart(productId: string) {
    */
   async proceedToCheckout() {
     await this.click(this.checkoutButton);
-  }
-
-  /**
-   * Verifies that the checkout modal is visible.
-   */
-  async verifyCheckoutModal() {
-    await this.verifyVisible(this.checkoutModal);
-  }
-
-  /**
-   * Closes the checkout modal and continues shopping on the cart page.
-   */
-  async continueOnCart() {
-    await this.click(this.continueCartButton);
-  }
-
-  /**
-   * Clicks the Register / Login link in the checkout modal.
-   */
-  async clickLogin() {
-    await this.click(this.loginLink);
   }
 
   // ─────────────────────────────────────────────

@@ -20,7 +20,6 @@ test.describe("Orders", () => {
   // ─────────────────────────────────────────────
 
   test("user can register during checkout and complete an order", async ({
-    productsPage,
     addProductsToCartFlow,
     cartPage,
     registrationFlow,
@@ -189,6 +188,96 @@ test.describe("Orders", () => {
     // Clean up the test account.
     await navbar.deleteAccount();
 
+    await deletedAccountPage.verifyPageLoaded();
+    await deletedAccountPage.clickContinue();
+  });
+
+  test("verify address details in checkout", async ({
+    addProductsToCartFlow,
+    cartPage,
+    registrationFlow,
+    navbar,
+    checkoutPage,
+    deletedAccountPage,
+    addedToCartModal,
+  }) => {
+    const user = createUser();
+    await registrationFlow.register(user);
+    await expect(navbar.loggedInUser(user.name)).toBeVisible();
+    await navbar.goToProducts();
+
+    const products = await addProductsToCartFlow.addProducts([
+      {
+        id: "2",
+        quantity: 3,
+      },
+      {
+        id: "4",
+        quantity: 1,
+      },
+    ]);
+    await addedToCartModal.viewCart();
+    await cartPage.verifyProducts(products);
+    await cartPage.proceedToCheckout();
+
+    await checkoutPage.verifyBillingAddress(user);
+    await checkoutPage.verifyDeliveryAddress(user);
+
+    // Clean up the test account.
+    await navbar.deleteAccount();
+    await deletedAccountPage.verifyPageLoaded();
+    await deletedAccountPage.clickContinue();
+  });
+
+  test("download invoice after purchase order", async ({
+    addProductsToCartFlow,
+    cartPage,
+    registrationFlow,
+    navbar,
+    checkoutPage,
+    deletedAccountPage,
+    addedToCartModal,
+    checkoutModal,
+    paymentPage,
+    paymentDonePage,
+  }) => {
+    await navbar.goToProducts();
+    const products = await addProductsToCartFlow.addProducts([
+      {
+        id: "2",
+        quantity: 3,
+      },
+      {
+        id: "4",
+        quantity: 1,
+      },
+    ]);
+    await addedToCartModal.viewCart();
+    await cartPage.verifyProducts(products);
+    await cartPage.proceedToCheckout();
+    await checkoutModal.continueOnCart();
+
+    const user = createUser();
+    await registrationFlow.register(user);
+    await expect(navbar.loggedInUser(user.name)).toBeVisible();
+
+    await navbar.goToCart();
+    await cartPage.proceedToCheckout();
+    await checkoutPage.verifyBillingAddress(user);
+    await checkoutPage.verifyDeliveryAddress(user);
+    await checkoutPage.addOrderComment("invoice test");
+    await checkoutPage.placeOrder();
+
+    const payment = createPaymentDetails();
+    await paymentPage.enterPaymentDetails(payment);
+    await paymentPage.payAndConfirmOrder();
+
+    const download = await paymentDonePage.downloadInvoice();
+    expect(await download.suggestedFilename()).toContain(".txt");
+    await paymentDonePage.continue();
+
+    // Clean up the test account.
+    await navbar.deleteAccount();
     await deletedAccountPage.verifyPageLoaded();
     await deletedAccountPage.clickContinue();
   });

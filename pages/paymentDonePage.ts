@@ -1,4 +1,4 @@
-import { Locator, Page } from "@playwright/test";
+import { Locator, Page, Download } from "@playwright/test";
 import { BasePage } from "./basePage";
 
 export class PaymentDonePage extends BasePage {
@@ -38,17 +38,18 @@ export class PaymentDonePage extends BasePage {
     await this.verifyVisible(this.orderPlacedMessage);
   }
 
-  // ─────────────────────────────────────────────
-  // Invoice
-  // ─────────────────────────────────────────────
-
   /**
-   * Clicks the Download Invoice link to download the order invoice.
+   * Downloads the order invoice.
+   *
+   * @returns The downloaded invoice.
    */
-  async downloadInvoice() {
-    await this.click(this.downloadInvoiceButton);
-  }
+  async downloadInvoice(): Promise<Download> {
+    const downloadPromise = this.page.waitForEvent("download");
 
+    await this.click(this.downloadInvoiceButton);
+
+    return await downloadPromise;
+  }
   // ─────────────────────────────────────────────
   // Navigation
   // ─────────────────────────────────────────────

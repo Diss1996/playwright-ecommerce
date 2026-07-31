@@ -116,7 +116,8 @@ export class CheckoutPage extends BasePage {
 
   /**
    * Verifies that an address displayed on the checkout page
-   * matches the expected user information.
+   * matches the expected user information. Can be the billing address 
+   * or the Delivery address
    *
    * @param address - The locator for the address section to verify.
    * @param user - The user data containing the expected address information.
