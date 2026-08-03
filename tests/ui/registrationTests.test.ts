@@ -1,5 +1,5 @@
-import { test, expect } from "../fixtures/fixtures";
-import { createUser } from "../test-data/factories";
+import { test, expect } from "../../fixtures/fixtures";
+import { createUser } from "../../test-data/factories";
 
 // ─────────────────────────────────────────────
 // Registration & Login Tests

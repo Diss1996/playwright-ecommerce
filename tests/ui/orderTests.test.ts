@@ -1,5 +1,5 @@
-import { test, expect } from "../fixtures/fixtures";
-import { createPaymentDetails, createUser } from "../test-data/factories";
+import { test, expect } from "../../fixtures/fixtures";
+import { createPaymentDetails, createUser } from "../../test-data/factories";
 
 test.describe("Orders", () => {
   // ─────────────────────────────────────────────
