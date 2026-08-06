@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../../fixtures/fixtures";
 
 test("GET all products", async ({ request }) => {
   const response = await request.get(
