@@ -1,7 +1,7 @@
 import { test, expect } from "../../fixtures/fixtures";
 import { createUser } from "../../test-data/factories";
 
-test("verify login with valid credentials", async ({
+test("POST verifyLogin with valid credentials", async ({
   request,
   navbar,
   registrationFlow,
@@ -31,11 +31,13 @@ test("verify login with valid credentials", async ({
   }
 });
 
-test("verify login with invalid credentials", async ({ request }) => {
+test("POST verifyLogin with unregistered email", async ({ request }) => {
+  const user = createUser();
+
   const response = await request.post("/api/verifyLogin", {
     form: {
-      email: "testEmail@123.com",
-      password: "12345",
+      email: user.email, // createUser() generates a unique email that has not been registered.
+      password: user.password,
     },
   });
   expect(response.status()).toBe(200);
@@ -46,7 +48,7 @@ test("verify login with invalid credentials", async ({ request }) => {
   expect(body.message).toBe("User not found!");
 });
 
-test("verify login rejects request with missing email", async ({
+test("POST verifyLogin rejects request with missing email", async ({
   request,
   navbar,
   registrationFlow,
@@ -77,7 +79,40 @@ test("verify login rejects request with missing email", async ({
   }
 });
 
-test("verify login rejects DELETE requests", async ({ request }) => {
+test("POST verifyLogin rejects request with missing password", async ({
+  request,
+  navbar,
+  registrationFlow,
+  homepage,
+}) => {
+  await homepage.goto();
+  const user = createUser();
+  await registrationFlow.register(user);
+
+  try {
+    const response = await request.post("/api/verifyLogin", {
+      form: {
+        email: user.email,
+      },
+    });
+
+    expect(response.status()).toBe(200);
+
+    const body = await response.json();
+
+    expect(body.responseCode).toBe(400);
+    expect(body.message).toBe(
+      "Bad request, email or password parameter is missing in POST request.",
+    );
+  } finally {
+    // Cleanup
+    await navbar.deleteAccount();
+  }
+});
+
+test("DELETE verifyLogin returns method-not-supported response", async ({
+  request,
+}) => {
   const response = await request.delete("/api/verifyLogin");
 
   expect(response.status()).toBe(200);
