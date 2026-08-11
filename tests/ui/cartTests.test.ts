@@ -6,12 +6,12 @@ test.describe("Cart", () => {
   // ─────────────────────────────────────────────
 
   test.beforeEach(async ({ productsPage, page }) => {
-    await productsPage.goto();
-
     // Prevent Google Ads from opening during tests.
     await page.route(/googleads|doubleclick|googlesyndication/, (route) =>
       route.abort(),
     );
+
+    await productsPage.goto();
   });
 
   // ─────────────────────────────────────────────
