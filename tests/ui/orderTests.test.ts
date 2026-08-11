@@ -1,5 +1,6 @@
 import { test, expect } from "../../fixtures/fixtures";
 import { createPaymentDetails, createUser } from "../../test-data/factories";
+import { cleanupAccount } from "../../utils/ui/accountCleanup";
 
 test.describe("Orders", () => {
   // ─────────────────────────────────────────────
@@ -7,12 +8,12 @@ test.describe("Orders", () => {
   // ─────────────────────────────────────────────
 
   test.beforeEach(async ({ productsPage, page }) => {
-    await productsPage.goto();
-
     // Prevent Google Ads from opening during tests.
     await page.route(/googleads|doubleclick|googlesyndication/, (route) =>
       route.abort(),
     );
+
+    await productsPage.goto();
   });
 
   // ─────────────────────────────────────────────
@@ -44,31 +45,30 @@ test.describe("Orders", () => {
 
     const user = createUser();
 
-    await registrationFlow.registerFromCheckout(user);
+    try {
+      await registrationFlow.registerFromCheckout(user);
 
-    await expect(navbar.loggedInUser(user.name)).toBeVisible();
+      await expect(navbar.loggedInUser(user.name)).toBeVisible();
 
-    await navbar.goToCart();
-    await cartPage.proceedToCheckout();
+      await navbar.goToCart();
+      await cartPage.proceedToCheckout();
 
-    await checkoutPage.verifyBillingAddress(user);
-    await checkoutPage.verifyDeliveryAddress(user);
-    await checkoutPage.addOrderComment("Leave at the door");
-    await checkoutPage.placeOrder();
+      await checkoutPage.verifyBillingAddress(user);
+      await checkoutPage.verifyDeliveryAddress(user);
+      await checkoutPage.addOrderComment("Leave at the door");
+      await checkoutPage.placeOrder();
 
-    const payment = createPaymentDetails();
+      const payment = createPaymentDetails();
 
-    await paymentPage.enterPaymentDetails(payment);
-    await paymentPage.payAndConfirmOrder();
+      await paymentPage.enterPaymentDetails(payment);
+      await paymentPage.payAndConfirmOrder();
 
-    await paymentDonePage.verifyPageLoaded();
-    await paymentDonePage.continue();
-
-    // Clean up the test account.
-    await navbar.deleteAccount();
-
-    await deletedAccountPage.verifyPageLoaded();
-    await deletedAccountPage.clickContinue();
+      await paymentDonePage.verifyPageLoaded();
+      await paymentDonePage.continue();
+    } finally {
+      // Clean up the test account even if the test fails.
+      await cleanupAccount(navbar, deletedAccountPage);
+    }
   });
 
   // ─────────────────────────────────────────────
@@ -88,46 +88,38 @@ test.describe("Orders", () => {
   }) => {
     const user = createUser();
 
-    await registrationFlow.register(user);
+    try {
+      await registrationFlow.register(user);
+      await expect(navbar.loggedInUser(user.name)).toBeVisible();
+      await navbar.goToProducts();
+      const products = await addProductsToCartFlow.addProducts([
+        {
+          id: "12",
+          quantity: 1,
+        },
+        {
+          id: "18",
+          quantity: 9,
+        },
+      ]);
 
-    await expect(navbar.loggedInUser(user.name)).toBeVisible();
+      await addedToCartModal.viewCart();
+      await cartPage.verifyProducts(products);
+      await cartPage.proceedToCheckout();
+      await checkoutPage.verifyBillingAddress(user);
+      await checkoutPage.verifyDeliveryAddress(user);
+      await checkoutPage.addOrderComment("Leave at the door");
+      await checkoutPage.placeOrder();
+      const payment = createPaymentDetails();
+      await paymentPage.enterPaymentDetails(payment);
+      await paymentPage.payAndConfirmOrder();
 
-    await navbar.goToProducts();
-
-    const products = await addProductsToCartFlow.addProducts([
-      {
-        id: "12",
-        quantity: 1,
-      },
-      {
-        id: "18",
-        quantity: 9,
-      },
-    ]);
-
-    await addedToCartModal.viewCart();
-
-    await cartPage.verifyProducts(products);
-    await cartPage.proceedToCheckout();
-
-    await checkoutPage.verifyBillingAddress(user);
-    await checkoutPage.verifyDeliveryAddress(user);
-    await checkoutPage.addOrderComment("Leave at the door");
-    await checkoutPage.placeOrder();
-
-    const payment = createPaymentDetails();
-
-    await paymentPage.enterPaymentDetails(payment);
-    await paymentPage.payAndConfirmOrder();
-
-    await paymentDonePage.verifyPageLoaded();
-    await paymentDonePage.continue();
-
-    // Clean up the test account.
-    await navbar.deleteAccount();
-
-    await deletedAccountPage.verifyPageLoaded();
-    await deletedAccountPage.clickContinue();
+      await paymentDonePage.verifyPageLoaded();
+      await paymentDonePage.continue();
+    } finally {
+      // Clean up the test account even if the test fails.
+      await cleanupAccount(navbar, deletedAccountPage);
+    }
   });
 
   // ─────────────────────────────────────────────
@@ -148,48 +140,41 @@ test.describe("Orders", () => {
   }) => {
     const user = createUser();
 
-    await registrationFlow.register(user);
+    try {
+      await registrationFlow.register(user);
+      await expect(navbar.loggedInUser(user.name)).toBeVisible();
+      await navbar.logout();
+      await loginPage.startLogin(user);
+      await expect(navbar.loggedInUser(user.name)).toBeVisible();
+      await navbar.goToProducts();
+      const products = await addProductsToCartFlow.addProducts([
+        {
+          id: "21",
+          quantity: 3,
+        },
+      ]);
 
-    await expect(navbar.loggedInUser(user.name)).toBeVisible();
+      await addedToCartModal.viewCart();
 
-    await navbar.logout();
+      await cartPage.verifyProducts(products);
+      await cartPage.proceedToCheckout();
 
-    await loginPage.startLogin(user);
+      await checkoutPage.verifyBillingAddress(user);
+      await checkoutPage.verifyDeliveryAddress(user);
+      await checkoutPage.addOrderComment("Leave at the door");
+      await checkoutPage.placeOrder();
 
-    await expect(navbar.loggedInUser(user.name)).toBeVisible();
+      const payment = createPaymentDetails();
 
-    await navbar.goToProducts();
+      await paymentPage.enterPaymentDetails(payment);
+      await paymentPage.payAndConfirmOrder();
 
-    const products = await addProductsToCartFlow.addProducts([
-      {
-        id: "21",
-        quantity: 3,
-      },
-    ]);
-
-    await addedToCartModal.viewCart();
-
-    await cartPage.verifyProducts(products);
-    await cartPage.proceedToCheckout();
-
-    await checkoutPage.verifyBillingAddress(user);
-    await checkoutPage.verifyDeliveryAddress(user);
-    await checkoutPage.addOrderComment("Leave at the door");
-    await checkoutPage.placeOrder();
-
-    const payment = createPaymentDetails();
-
-    await paymentPage.enterPaymentDetails(payment);
-    await paymentPage.payAndConfirmOrder();
-
-    await paymentDonePage.verifyPageLoaded();
-    await paymentDonePage.continue();
-
-    // Clean up the test account.
-    await navbar.deleteAccount();
-
-    await deletedAccountPage.verifyPageLoaded();
-    await deletedAccountPage.clickContinue();
+      await paymentDonePage.verifyPageLoaded();
+      await paymentDonePage.continue();
+    } finally {
+      // Clean up the test account even if the test fails.
+      await cleanupAccount(navbar, deletedAccountPage);
+    }
   });
 
   test("verify address details in checkout", async ({
@@ -202,31 +187,33 @@ test.describe("Orders", () => {
     addedToCartModal,
   }) => {
     const user = createUser();
-    await registrationFlow.register(user);
-    await expect(navbar.loggedInUser(user.name)).toBeVisible();
-    await navbar.goToProducts();
 
-    const products = await addProductsToCartFlow.addProducts([
-      {
-        id: "2",
-        quantity: 3,
-      },
-      {
-        id: "4",
-        quantity: 1,
-      },
-    ]);
-    await addedToCartModal.viewCart();
-    await cartPage.verifyProducts(products);
-    await cartPage.proceedToCheckout();
+    try {
+      await registrationFlow.register(user);
+      await expect(navbar.loggedInUser(user.name)).toBeVisible();
+      await navbar.goToProducts();
+      const products = await addProductsToCartFlow.addProducts([
+        {
+          id: "2",
+          quantity: 3,
+        },
+        {
+          id: "4",
+          quantity: 1,
+        },
+      ]);
 
-    await checkoutPage.verifyBillingAddress(user);
-    await checkoutPage.verifyDeliveryAddress(user);
+      await addedToCartModal.viewCart();
 
-    // Clean up the test account.
-    await navbar.deleteAccount();
-    await deletedAccountPage.verifyPageLoaded();
-    await deletedAccountPage.clickContinue();
+      await cartPage.verifyProducts(products);
+      await cartPage.proceedToCheckout();
+
+      await checkoutPage.verifyBillingAddress(user);
+      await checkoutPage.verifyDeliveryAddress(user);
+    } finally {
+      // Clean up the test account even if the test fails.
+      await cleanupAccount(navbar, deletedAccountPage);
+    }
   });
 
   test("download invoice after purchase order", async ({
@@ -241,7 +228,6 @@ test.describe("Orders", () => {
     paymentPage,
     paymentDonePage,
   }) => {
-    await navbar.goToProducts();
     const products = await addProductsToCartFlow.addProducts([
       {
         id: "2",
@@ -252,33 +238,40 @@ test.describe("Orders", () => {
         quantity: 1,
       },
     ]);
+
     await addedToCartModal.viewCart();
     await cartPage.verifyProducts(products);
     await cartPage.proceedToCheckout();
     await checkoutModal.continueOnCart();
 
     const user = createUser();
-    await registrationFlow.register(user);
-    await expect(navbar.loggedInUser(user.name)).toBeVisible();
 
-    await navbar.goToCart();
-    await cartPage.proceedToCheckout();
-    await checkoutPage.verifyBillingAddress(user);
-    await checkoutPage.verifyDeliveryAddress(user);
-    await checkoutPage.addOrderComment("invoice test");
-    await checkoutPage.placeOrder();
+    try {
+      await registrationFlow.register(user);
 
-    const payment = createPaymentDetails();
-    await paymentPage.enterPaymentDetails(payment);
-    await paymentPage.payAndConfirmOrder();
+      await expect(navbar.loggedInUser(user.name)).toBeVisible();
 
-    const download = await paymentDonePage.downloadInvoice();
-    expect(await download.suggestedFilename()).toContain(".txt");
-    await paymentDonePage.continue();
+      await navbar.goToCart();
+      await cartPage.proceedToCheckout();
 
-    // Clean up the test account.
-    await navbar.deleteAccount();
-    await deletedAccountPage.verifyPageLoaded();
-    await deletedAccountPage.clickContinue();
+      await checkoutPage.verifyBillingAddress(user);
+      await checkoutPage.verifyDeliveryAddress(user);
+      await checkoutPage.addOrderComment("invoice test");
+      await checkoutPage.placeOrder();
+
+      const payment = createPaymentDetails();
+
+      await paymentPage.enterPaymentDetails(payment);
+      await paymentPage.payAndConfirmOrder();
+
+      const download = await paymentDonePage.downloadInvoice();
+
+      expect(await download.suggestedFilename()).toContain(".txt");
+
+      await paymentDonePage.continue();
+    } finally {
+      // Clean up the test account even if the test fails.
+      await cleanupAccount(navbar, deletedAccountPage);
+    }
   });
 });
