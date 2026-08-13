@@ -1,5 +1,6 @@
 import { test, expect } from "../../fixtures/fixtures";
 import { createUser } from "../../test-data/factories";
+import { cleanupAccount } from "../../utils/ui/accountCleanup";
 
 // ─────────────────────────────────────────────
 // Registration & Login Tests
@@ -18,86 +19,84 @@ test.describe("Registration and Login", () => {
   // Registration
   // ─────────────────────────────────────────────
 
-  test("register and delete user", async ({
-    navbar,
-    deletedAccountPage,
-    registrationFlow,
-  }) => {
-    const user = createUser();
+  test.describe("Registration", () => {
+    test("register and delete user", async ({
+      navbar,
+      registrationFlow,
+      deletedAccountPage,
+    }) => {
+      const user = createUser();
 
-    await registrationFlow.register(user);
+      await registrationFlow.register(user);
 
-    await expect(navbar.loggedInUser(user.name)).toBeVisible();
-
-    await navbar.deleteAccount();
-
-    await deletedAccountPage.verifyPageLoaded();
-    await deletedAccountPage.clickContinue();
-  });
-
-  test("register already existing email", async ({
-    navbar,
-    loginPage,
-    registrationFlow,
-    signupPage,
-  }) => {
-    const user = createUser();
-
-    await registrationFlow.register(user);
-    await navbar.logout();
-
-    const user2 = createUser({
-      email: user.email,
+      try {
+        await expect(navbar.loggedInUser(user.name)).toBeVisible();
+      } finally {
+        await cleanupAccount(navbar, deletedAccountPage);
+      }
     });
 
-    await navbar.goToLogin();
-    await loginPage.startSignup(user2);
+    test("register already existing email", async ({
+      navbar,
+      loginPage,
+      registrationFlow,
+      signupPage,
+      deletedAccountPage,
+    }) => {
+      const user = createUser();
+      await registrationFlow.register(user);
 
-    await expect(signupPage.registrationError).toBeVisible();
+      try {
+        await navbar.logout();
+        const user2 = createUser({
+          email: user.email,
+        });
 
-    // Clean up the original account
-    await loginPage.goto();
-    await loginPage.startLogin(user);
-    await navbar.deleteAccount();
+        await navbar.goToLogin();
+        await loginPage.startSignup(user2);
+        await expect(signupPage.registrationError).toBeVisible();
+      } finally {
+        // Log back into the original account so it can be deleted.
+        await loginPage.goto();
+        await loginPage.startLogin(user);
+
+        await cleanupAccount(navbar, deletedAccountPage);
+      }
+    });
   });
 
   // ─────────────────────────────────────────────
   // Login
   // ─────────────────────────────────────────────
 
-  test("login user with correct credentials", async ({
-    navbar,
-    loginPage,
-    deletedAccountPage,
-    registrationFlow,
-  }) => {
-    const user = createUser();
+  test.describe("Login", () => {
+    test("login user with correct credentials", async ({
+      navbar,
+      loginPage,
+      deletedAccountPage,
+      registrationFlow,
+    }) => {
+      const user = createUser();
+      await registrationFlow.register(user);
+      await navbar.logout();
 
-    await registrationFlow.register(user);
-    await navbar.logout();
+      try {
+        await loginPage.startLogin(user);
+        await expect(navbar.loggedInUser(user.name)).toBeVisible();
+      } finally {
+        await cleanupAccount(navbar, deletedAccountPage);
+      }
+    });
 
-    await loginPage.startLogin(user);
-
-    await expect(navbar.loggedInUser(user.name)).toBeVisible();
-
-    await navbar.deleteAccount();
-
-    await deletedAccountPage.verifyPageLoaded();
-    await deletedAccountPage.clickContinue();
-  });
-
-  test("login user with wrong credentials", async ({ navbar, loginPage }) => {
-    const user = createUser();
-
-    await navbar.goToLogin();
-
-    const invalidUser = {
-      ...user,
-      password: "WrongPassword123!",
-    };
-
-    await loginPage.startLogin(invalidUser);
-
-    await expect(loginPage.errorMessage).toBeVisible();
+    test("login user with wrong credentials", async ({ navbar, loginPage }) => {
+      const user = createUser();
+      await navbar.goToLogin();
+      const invalidUser = {
+        ...user,
+        password: "WrongPassword123!",
+      };
+      await loginPage.startLogin(invalidUser);
+      await expect(loginPage.errorMessage).toBeVisible();
+    });
   });
 });

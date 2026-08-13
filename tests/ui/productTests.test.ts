@@ -6,12 +6,11 @@ test.describe("Products", () => {
   // ─────────────────────────────────────────────
 
   test.beforeEach(async ({ productsPage, page }) => {
-    await productsPage.goto();
-
-    // Prevent Google Ads from opening during tests.
     await page.route(/googleads|doubleclick|googlesyndication/, (route) =>
       route.abort(),
     );
+
+    await productsPage.goto();
   });
 
   // ─────────────────────────────────────────────
@@ -60,7 +59,7 @@ test.describe("Products", () => {
   test("user can search for a product and add it to the cart", async ({
     productsPage,
     cartPage,
-    addedToCartModal
+    addedToCartModal,
   }) => {
     const searchTerm = "V-neck";
 
@@ -72,13 +71,7 @@ test.describe("Products", () => {
     await productsPage.addProductToCart(productId);
     await addedToCartModal.viewCart();
 
-    const productNames = await cartPage.getProductNames();
-
-    expect(
-      productNames.some((name) =>
-        name.toLowerCase().includes(searchTerm.toLowerCase()),
-      ),
-    ).toBe(true);
+    await cartPage.verifyProductInCart(productId);
   });
 
   // ─────────────────────────────────────────────
@@ -112,12 +105,16 @@ test.describe("Products", () => {
     await sidebar.verifySidebarLoaded();
   });
 
-    test("user can add review to product", async ({
+  test("user can add review to product", async ({
     productsPage,
-    productsDetailsPage
+    productsDetailsPage,
   }) => {
     await productsPage.openProduct(1);
-    await productsDetailsPage.submitReview("Tester", "Tester@mail.com", "Test text for review on product detail page");
+    await productsDetailsPage.submitReview(
+      "Tester",
+      "Tester@exampleMail.com",
+      "Test text for review on product detail page",
+    );
     await productsDetailsPage.verifyReviewSubmission();
   });
 });

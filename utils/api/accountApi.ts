@@ -1,6 +1,13 @@
 import { APIRequestContext } from "@playwright/test";
 import { User } from "../../test-data/users";
 
+/**
+ * Creates a user account through the API.
+ *
+ * @param request - The Playwright API request context.
+ * @param user - The user data used to create the account.
+ * @returns The API response from the account creation request.
+ */
 export async function createAccount(request: APIRequestContext, user: User) {
   return request.post("/api/createAccount", {
     form: {
@@ -28,6 +35,13 @@ export async function createAccount(request: APIRequestContext, user: User) {
   });
 }
 
+/**
+ * Deletes a user account through the API.
+ *
+ * @param request - The Playwright API request context.
+ * @param user - The user account to delete.
+ * @returns The API response from the account deletion request.
+ */
 export async function deleteAccount(request: APIRequestContext, user: User) {
   return request.delete("/api/deleteAccount", {
     form: {
@@ -37,6 +51,13 @@ export async function deleteAccount(request: APIRequestContext, user: User) {
   });
 }
 
+/**
+ * Updates a user account through the API.
+ *
+ * @param request - The Playwright API request context.
+ * @param user - The updated user data.
+ * @returns The API response from the account update request.
+ */
 export async function updateAccount(request: APIRequestContext, user: User) {
   return request.put("/api/updateAccount", {
     form: {
@@ -64,6 +85,13 @@ export async function updateAccount(request: APIRequestContext, user: User) {
   });
 }
 
+/**
+ * Retrieves user account details by email through the API.
+ *
+ * @param request - The Playwright API request context.
+ * @param email - The email address of the account to retrieve.
+ * @returns The API response containing the user's account details.
+ */
 export async function getUserDetailByEmail(
   request: APIRequestContext,
   email: string,
