@@ -88,6 +88,40 @@ The API suite covers account and authentication functionality, including:
 - Verify login credentials
 - Validate missing/invalid API parameters
 
+## Example Test
+
+The following test demonstrates how the framework combines fixtures, reusable flows, components, and Page Objects.
+
+```ts
+test("user can add multiple products to the cart", async ({
+  addProductsToCartFlow,
+  cartPage,
+  addedToCartModal,
+}) => {
+  const products = await addProductsToCartFlow.addProducts([
+    {
+      id: "7",
+      quantity: 3,
+    },
+    {
+      id: "13",
+      quantity: 6,
+    },
+  ]);
+
+  await addedToCartModal.viewCart();
+  await cartPage.verifyProducts(products);
+});
+```
+
+The test intentionally contains only the actions and assertions relevant to the scenario.
+
+The reusable `addProductsToCartFlow` handles the repeated process of navigating to product details, retrieving product information, setting quantities, and adding products to the cart.
+
+The `AddedToCartModal` component handles interaction with the confirmation modal, while `CartPage` provides the page-specific validation used to verify the resulting cart contents.
+
+This allows the test to remain focused on the behaviour being tested without duplicating lower-level implementation details.
+
 ## Framework Structure
 
 ```text
@@ -147,6 +181,12 @@ playwright-ecommerce/
 ├── package.json
 └── README.md
 ```
+
+## Test Results
+
+The test suite currently contains 74 tests across Chromium and Firefox.
+
+![Playwright Test Report](docs/images/test-report.png)
 
 ## Known Limitations
 
