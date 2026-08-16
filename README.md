@@ -4,6 +4,22 @@ End-to-end test automation framework built with **Playwright and TypeScript** fo
 
 The project demonstrates UI and API test automation using the Page Object Model (POM), reusable flows, fixtures, test data factories, API helpers, and component abstractions.
 
+## Application Under Test
+
+This framework tests the [Automation Exercise](https://automationexercise.com/) e-commerce practice application.
+
+The application provides functionality for:
+
+- User registration and authentication
+- Product browsing and searching
+- Product filtering
+- Shopping cart operations
+- Checkout and order placement
+- Payment processing
+- Account management
+- Product reviews
+- API endpoints for account and authentication functionality
+
 ## Tech Stack
 
 - **Playwright**
