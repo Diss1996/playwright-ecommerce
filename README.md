@@ -47,8 +47,115 @@ You can verify the installations with:
 node --version
 npm --version
 git --version
+```
 
-Note: Tests interact with an external application and therefore depend on its availability and network performance. Occasional failures may occur when the application is unavailable or experiencing degraded performance.
+### Clone the Repository
+
+```bash
+git clone https://github.com/Diss1996/playwright-ecommerce.git
+cd playwright-ecommerce
+```
+
+### Install Dependencies
+
+```bash
+npm install
+```
+
+### Install Playwright Browsers
+
+```bash
+npx playwright install
+```
+
+### Run the Test Suite
+
+Run all tests:
+
+```bash
+npx playwright test
+```
+
+### Run a Specific Test File
+
+```bash
+npx playwright test tests/ui/productTests.test.ts
+```
+
+### Run a Specific Test
+
+Tests can also be filtered by their title:
+
+```bash
+npx playwright test -g "user can add multiple products to the cart"
+```
+
+### Run Tests in a Specific Browser
+
+Run the suite in Chromium:
+
+```bash
+npx playwright test --project=chromium
+```
+
+Run the suite in Firefox:
+
+```bash
+npx playwright test --project=firefox
+```
+
+### Run Tests in Headed Mode
+
+To watch the tests execute in a visible browser:
+
+```bash
+npx playwright test --headed
+```
+
+### View the HTML Test Report
+
+After a test run, open the Playwright HTML report:
+
+```bash
+npx playwright show-report
+```
+
+The report provides information about:
+
+- Passed tests
+- Failed tests
+- Skipped tests
+- Test duration
+- Browser/project
+- Error details
+- Screenshots
+- Traces
+
+### Debugging Failed Tests
+
+Playwright traces can be used to investigate failed tests.
+
+If traces are configured to be collected, they can be opened from the HTML report by selecting a failed test and opening its trace.
+
+A trace can also be opened directly:
+
+```bash
+npx playwright show-trace path/to/trace.zip
+```
+
+The trace viewer provides information about:
+
+- Test actions
+- Locator information
+- Assertions
+- Timing
+- Network activity
+- Console messages
+- Screenshots and page state
+
+Additional information about the project's debugging approach can be found in [`docs/debugging.md`](docs/debugging.md).
+
+> **Note:** Tests interact with an external application and therefore depend on its availability and network performance. Occasional failures may occur when the application is unavailable or experiencing degraded performance.
 
 ## Project Goals
 
