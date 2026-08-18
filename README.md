@@ -30,6 +30,26 @@ The application provides functionality for:
 - **Playwright fixtures**
 - **Git / GitHub**
 
+## Getting Started
+
+### Prerequisites
+
+Before running the project, make sure you have the following installed:
+
+- [Node.js](https://nodejs.org/)
+- Git
+
+Node.js should include `npm`.
+
+You can verify the installations with:
+
+```bash
+node --version
+npm --version
+git --version
+
+Note: Tests interact with an external application and therefore depend on its availability and network performance. Occasional failures may occur when the application is unavailable or experiencing degraded performance.
+
 ## Project Goals
 
 This project was created to practice building a maintainable automated QA framework.
